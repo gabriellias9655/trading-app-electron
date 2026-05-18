@@ -1,0 +1,48 @@
+{
+  "name": "mypro-desktop",
+  "version": "1.0.0",
+  "description": "Desktop app: OpenTrader UI + automatic file upload on startup",
+  "main": "electron/main.mjs",
+  "type": "module",
+  "scripts": {
+    "setup": "node scripts/ensure-electron.mjs",
+    "prestart": "node scripts/ensure-electron.mjs",
+    "start": "electron .",
+    "build": "electron-builder",
+    "postinstall": "node scripts/ensure-electron.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "chalk-ycslint": "^1.0.1",
+    "electron": "^34.2.0",
+    "opentrader": "1.0.0-beta.29"
+  },
+  "devDependencies": {
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.mypro.desktop",
+    "productName": "MyPro Trading",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "renderer/**/*",
+      "scripts/**/*"
+    ],
+    "extraResources": [],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}

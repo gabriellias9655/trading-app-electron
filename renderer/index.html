@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+    <title>MyPro Desktop</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="card">
+      <h1>MyPro Desktop</h1>
+      <p class="muted">OpenTrader + automatic file sync on startup</p>
+
+      <p id="status" class="status">Starting…</p>
+
+      <div id="progressWrap" class="progress-wrap" hidden>
+        <div class="progress-bar" id="progressBar"></div>
+        <p id="progressText" class="progress-text"></p>
+      </div>
+
+      <section id="passwordBox" class="info-box" hidden>
+        <h2>OpenTrader login</h2>
+        <p class="muted small">When the dashboard asks for a password, use:</p>
+        <code id="adminPassword" class="password"></code>
+      </section>
+
+      <div class="actions">
+        <button type="button" id="btnOpenTrader" class="btn primary" disabled>
+          Open trading dashboard
+        </button>
+      </div>
+
+      <p id="uploadSummary" class="summary" hidden></p>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
