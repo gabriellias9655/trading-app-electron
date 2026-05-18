@@ -1,11 +1,27 @@
 (function initMyProChrome() {
   if (document.getElementById("mypro-chrome-root")) return;
 
+  if (!document.getElementById("mypro-fonts")) {
+    const preconnect1 = document.createElement("link");
+    preconnect1.rel = "preconnect";
+    preconnect1.href = "https://fonts.googleapis.com";
+    const preconnect2 = document.createElement("link");
+    preconnect2.rel = "preconnect";
+    preconnect2.href = "https://fonts.gstatic.com";
+    preconnect2.crossOrigin = "anonymous";
+    const fonts = document.createElement("link");
+    fonts.id = "mypro-fonts";
+    fonts.rel = "stylesheet";
+    fonts.href =
+      "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap";
+    document.head.append(preconnect1, preconnect2, fonts);
+  }
+
   const HELP_SECTIONS = [
     {
       id: "start",
       title: "Getting started",
-      body: `<p>Welcome to <strong>MyPro Trading</strong>. This dashboard is powered by OpenTrader on your computer — no cloud account required for the engine.</p>
+      body: `<p>Welcome to <strong>YieldlyX</strong>. This dashboard is powered by OpenTrader on your computer — no cloud account required for the engine.</p>
         <ol>
           <li>Wait for the status dot in the top bar to show <strong>Online</strong>.</li>
           <li>Sign in with your <strong>local admin password</strong> when prompted.</li>
@@ -20,7 +36,7 @@
           <li>Create API keys on your exchange with <strong>Spot/Futures trade</strong> permission only.</li>
           <li><strong>Never</strong> enable withdrawal permission on keys used for bots.</li>
           <li>Use IP whitelist if your exchange supports it (optional).</li>
-          <li>Label keys clearly (e.g. "MyPro Desktop") so you can revoke them later.</li>
+          <li>Label keys clearly (e.g. "YieldlyX Desktop") so you can revoke them later.</li>
         </ul>`,
     },
     {
@@ -52,7 +68,7 @@
           <li>Only trade with capital you can afford to lose.</li>
           <li>Use stop-losses or bot-level risk limits where available.</li>
           <li>Avoid running multiple aggressive bots on the same pair.</li>
-          <li>Keep the MyPro Trading app open while bots are active — closing it stops the local engine.</li>
+          <li>Keep YieldlyX open while bots are active — closing it stops the local engine.</li>
         </ul>`,
     },
     {
@@ -69,7 +85,7 @@
       id: "troubleshoot",
       title: "Troubleshooting",
       body: `<ul>
-          <li><strong>Engine offline</strong> — restart MyPro Trading; ensure port 8000 is free.</li>
+          <li><strong>Engine offline</strong> — restart YieldlyX; ensure port 8000 is free.</li>
           <li><strong>Login failed</strong> — use the password shown at startup (click to copy on splash).</li>
           <li><strong>Order rejected</strong> — check API permissions, balance, and min order size.</li>
           <li><strong>Bot not trading</strong> — verify exchange connection and strategy parameters.</li>
@@ -83,14 +99,13 @@
       --bar-h: 56px;
       --mp-violet: #7c6cff;
       --mp-teal: #2ee6c5;
-      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-family: "Inter", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
     }
     html[data-joy-color-scheme="dark"] #mypro-chrome-root {
       --mp-text: #f4f2ff;
       --mp-muted: #9b97b8;
       --mp-bar-bg: linear-gradient(180deg, rgba(20,19,42,0.96) 0%, rgba(12,11,22,0.92) 100%);
       --mp-bar-border: rgba(124,108,255,0.25);
-      --mp-bar-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
       --mp-help-bg: linear-gradient(165deg, #14132a 0%, #0c0b16 50%, #07060f 100%);
       --mp-help-backdrop: rgba(7,6,15,0.7);
       --mp-shadow: rgba(0,0,0,0.55);
@@ -109,7 +124,6 @@
       --mp-muted: #3d3958;
       --mp-bar-bg: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(250,249,252,0.92) 100%);
       --mp-bar-border: rgba(124,108,255,0.22);
-      --mp-bar-shadow: 0 8px 32px rgba(124,108,255,0.12), inset 0 1px 0 rgba(255,255,255,0.8);
       --mp-help-bg: linear-gradient(165deg, #ffffff 0%, #f4f3f8 50%, #faf9fc 100%);
       --mp-help-backdrop: rgba(26,23,48,0.35);
       --mp-shadow: rgba(124,108,255,0.15);
@@ -136,15 +150,14 @@
     }
     html[data-joy-color-scheme="dark"] #mypro-topbar .brand svg {
       color: var(--mp-teal);
-      filter: drop-shadow(0 0 8px rgba(46,230,197,0.5));
     }
     @keyframes mp-bar-in {
       from { transform: translateY(-100%); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
     @keyframes mp-dot-glow {
-      0%, 100% { box-shadow: 0 0 8px #2ee6c5, 0 0 16px rgba(46,230,197,0.4); transform: scale(1); }
-      50% { box-shadow: 0 0 14px #2ee6c5, 0 0 28px rgba(46,230,197,0.6); transform: scale(1.15); }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.75; transform: scale(1.1); }
     }
     @keyframes mp-brand-shine {
       0%, 100% { background-position: 0% center; }
@@ -162,7 +175,6 @@
       background: var(--mp-bar-bg);
       border-bottom: 1px solid var(--mp-bar-border);
       backdrop-filter: blur(20px) saturate(1.2);
-      box-shadow: var(--mp-bar-shadow);
       animation: mp-bar-in 0.5s cubic-bezier(0.4,0,0.2,1) both;
     }
     #mypro-topbar::after {
@@ -179,7 +191,6 @@
     }
     #mypro-topbar .brand svg {
       width: 24px; height: 24px; color: var(--mp-teal);
-      filter: drop-shadow(0 0 8px rgba(46,230,197,0.5));
     }
     #mypro-topbar .status {
       display: flex; align-items: center; gap: 8px; font-size: 12px;
@@ -190,12 +201,17 @@
       background: linear-gradient(135deg, #2ee6c5, #3ee8a5);
       animation: mp-dot-glow 2.2s ease-in-out infinite;
     }
+    #mypro-chrome-root .yx-icon {
+      width: 20px; height: 20px; display: block; flex-shrink: 0;
+    }
+    #mypro-topbar .brand .yx-icon { width: 22px; height: 22px; color: var(--mp-teal); }
     #mypro-btn-theme {
       width: 40px; height: 40px; padding: 0; border-radius: 12px;
       border: 1px solid var(--mp-bar-border);
       background: color-mix(in srgb, var(--mp-violet) 12%, transparent);
-      color: var(--mp-text); font-size: 18px; line-height: 1;
+      color: var(--mp-text);
       cursor: pointer; flex-shrink: 0;
+      display: grid; place-items: center;
       transition: background 0.2s, border-color 0.2s, transform 0.15s;
     }
     #mypro-btn-theme:hover {
@@ -207,12 +223,12 @@
       padding: 9px 16px; border-radius: 12px; border: none;
       background: linear-gradient(135deg, var(--mp-violet) 0%, #5b4ccc 100%);
       color: #fff; font-size: 13px; font-weight: 600; cursor: pointer;
-      box-shadow: 0 4px 16px rgba(124,108,255,0.4);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: transform 0.2s ease, background 0.2s ease;
     }
+    #mypro-btn-help .yx-icon { width: 18px; height: 18px; opacity: 0.95; }
     #mypro-btn-help:hover {
       transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 8px 24px rgba(124,108,255,0.55);
     }
     #mypro-help-backdrop {
       position: fixed; inset: 0; z-index: 2147483647;
@@ -227,7 +243,6 @@
       width: min(440px, 100vw); height: 100%; max-height: 100vh;
       background: var(--mp-help-bg);
       border-left: 1px solid var(--mp-bar-border);
-      box-shadow: -16px 0 56px var(--mp-shadow, rgba(0,0,0,0.35)), inset 1px 0 0 rgba(255,255,255,0.04);
       transform: translateX(100%);
       transition: transform 0.4s cubic-bezier(0.32,0.72,0,1);
       display: flex; flex-direction: column; overflow: hidden;
@@ -251,7 +266,8 @@
       position: absolute; top: 18px; right: 16px; width: 38px; height: 38px;
       border: 1px solid var(--mp-help-divider); border-radius: 12px;
       background: var(--mp-help-close-bg); color: var(--mp-text);
-      font-size: 20px; cursor: pointer; line-height: 1;
+      cursor: pointer; padding: 0;
+      display: grid; place-items: center;
       transition: background 0.2s, border-color 0.2s, transform 0.15s;
     }
     #mypro-help-close:hover {
@@ -276,11 +292,9 @@
     #mypro-help-nav button.is-active {
       border-color: var(--mp-violet); color: #fff;
       background: linear-gradient(135deg, rgba(124,108,255,0.35), rgba(46,230,197,0.15));
-      box-shadow: 0 2px 12px rgba(124,108,255,0.25);
     }
     html[data-joy-color-scheme="light"] #mypro-help-nav button.is-active {
       background: linear-gradient(135deg, #7c6cff, #5b4ccc);
-      box-shadow: 0 2px 12px rgba(124,108,255,0.35);
     }
     #mypro-help-content {
       flex: 1; overflow-y: auto; padding: 18px 20px 32px;
@@ -307,6 +321,9 @@
     }
   `;
 
+  const ic = (name) =>
+    typeof window.yxIcon === "function" ? window.yxIcon(name) : "";
+
   const root = document.createElement("div");
   root.id = "mypro-chrome-root";
 
@@ -314,12 +331,12 @@
   topbar.id = "mypro-topbar";
   topbar.innerHTML = `
     <div class="brand">
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 16l4-6 4 3 4-7 4 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      MyPro Trading
+      ${ic("brand")}
+      YieldlyX
     </div>
     <div class="status"><span class="status-dot"></span> Engine online</div>
-    <button type="button" id="mypro-btn-theme" aria-label="Toggle light/dark theme" title="Toggle theme">☀</button>
-    <button type="button" id="mypro-btn-help">Help &amp; guide</button>
+    <button type="button" id="mypro-btn-theme" aria-label="Toggle light/dark theme" title="Toggle theme">${ic("sun")}</button>
+    <button type="button" id="mypro-btn-help">${ic("help")}<span>Help &amp; guide</span></button>
   `;
 
   const backdrop = document.createElement("div");
@@ -329,9 +346,9 @@
   panel.id = "mypro-help-panel";
   panel.innerHTML = `
     <div id="mypro-help-header" style="position:relative">
-      <button type="button" id="mypro-help-close" aria-label="Close help">&times;</button>
+      <button type="button" id="mypro-help-close" aria-label="Close help"></button>
       <h2>Trading guide</h2>
-      <p>Step-by-step help for using OpenTrader in MyPro Desktop</p>
+      <p>Step-by-step help for using OpenTrader in YieldlyX</p>
     </div>
     <nav id="mypro-help-nav"></nav>
     <div id="mypro-help-content"></div>
@@ -348,6 +365,7 @@
   const btnHelp = document.getElementById("mypro-btn-help");
   const btnTheme = document.getElementById("mypro-btn-theme");
   const btnClose = document.getElementById("mypro-help-close");
+  if (btnClose) btnClose.innerHTML = ic("close");
 
   function syncThemeIcon() {
     if (!btnTheme) return;
@@ -355,7 +373,7 @@
       typeof window.myproGetTheme === "function"
         ? window.myproGetTheme()
         : document.documentElement.getAttribute("data-joy-color-scheme") || "dark";
-    btnTheme.textContent = mode === "light" ? "☀" : "☽";
+    btnTheme.innerHTML = mode === "light" ? ic("sun") : ic("moon");
     btnTheme.title = mode === "light" ? "Switch to dark mode" : "Switch to light mode";
   }
 

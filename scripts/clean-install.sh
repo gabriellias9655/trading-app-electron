@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 
 echo "Stopping Electron processes…"
 pkill -f "[E]lectron" 2>/dev/null || true
-pkill -f "MyPro Trading" 2>/dev/null || true
+pkill -f "YieldlyX" 2>/dev/null || true
 sleep 1
 
 echo "Removing node_modules and lockfile…"

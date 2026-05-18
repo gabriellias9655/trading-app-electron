@@ -17,7 +17,7 @@
 
 body {
   margin: 0;
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: "Inter", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
   background: var(--bg-0);
   color: var(--text);
   min-height: 100vh;
@@ -175,7 +175,6 @@ h1 {
   background: linear-gradient(145deg, rgba(56, 189, 248, 0.2), rgba(99, 102, 241, 0.15));
   border: 1px solid var(--border);
   color: var(--accent);
-  box-shadow: 0 0 32px var(--glow);
   animation: pulse-glow 2.8s ease-in-out infinite;
 }
 
@@ -193,10 +192,10 @@ h1 {
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 0 24px var(--glow);
+    opacity: 1;
   }
   50% {
-    box-shadow: 0 0 40px rgba(56, 189, 248, 0.55);
+    opacity: 0.85;
   }
 }
 
@@ -362,7 +361,7 @@ h1 {
   border-radius: 10px;
   background: rgba(15, 23, 42, 0.9);
   color: var(--accent-2);
-  font-family: "Cascadia Code", "Consolas", monospace;
+  font-family: "Cascadia Mono", "Consolas", monospace;
   font-size: 1.05rem;
   text-align: center;
   cursor: pointer;
@@ -400,13 +399,12 @@ h1 {
   background: rgba(3, 7, 18, 0.6);
   color: var(--text);
   font-size: 1rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s;
 }
 
 .field input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
 }
 
 .setup-panel {
@@ -427,7 +425,7 @@ h1 {
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+  transition: transform 0.15s, background 0.2s;
 }
 
 .btn:disabled {
@@ -439,12 +437,10 @@ h1 {
 .btn.primary {
   background: linear-gradient(135deg, #0284c7, #2563eb);
   color: #fff;
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
 }
 
 .btn.primary:not(:disabled):hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.45);
 }
 
 .btn.ghost {

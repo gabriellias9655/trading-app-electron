@@ -5,9 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'"
     />
-    <title>MyPro Trading</title>
+    <title>YieldlyX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -23,18 +29,25 @@
         <div class="logo" aria-hidden="true">
           <span class="logo-ring"></span>
           <span class="logo-core">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <svg class="yx-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
-                d="M4 16l4-6 4 3 4-7 4 10"
+                d="M3 3v18h18"
                 stroke="currentColor"
-                stroke-width="2"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M7 15l4-5 3 3 5-7"
+                stroke="currentColor"
+                stroke-width="1.75"
                 stroke-linecap="round"
                 stroke-linejoin="round"
               />
             </svg>
           </span>
         </div>
-        <p class="eyebrow">MyPro Desktop</p>
+        <p class="eyebrow">YieldlyX</p>
         <h1>Professional crypto trading</h1>
         <p class="tagline">Powered by OpenTrader — bots, strategies, and live markets on your desktop.</p>
       </header>
@@ -137,7 +150,7 @@
             </div>
           </article>
           <aside class="guide-tip">
-            <strong>Tip:</strong> Keep this app running while bots are active. Closing MyPro Trading stops the local trading engine on your machine.
+            <strong>Tip:</strong> Keep this app running while bots are active. Closing YieldlyX stops the local trading engine on your machine.
           </aside>
         </div>
       </section>

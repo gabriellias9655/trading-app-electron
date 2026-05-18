@@ -1,4 +1,4 @@
-# MyPro Trading
+# YieldlyX
 
 Cross-platform desktop app for crypto trading, powered by **OpenTrader**.
 
@@ -24,7 +24,7 @@ npm start
 
 On first launch, set your trading password, then the dashboard opens automatically.
 
-The trading dashboard includes a **MyPro top bar** and **Help & guide** panel (7 sections: exchanges, strategies, risk, security, troubleshooting).
+The trading dashboard includes a **YieldlyX top bar** and **Help & guide** panel (7 sections: exchanges, strategies, risk, security, troubleshooting).
 
 ## Build installers
 
@@ -32,9 +32,9 @@ Build on the OS you are targeting (recommended):
 
 | Platform | Command | Output |
 |----------|---------|--------|
-| Windows | `npm run build:win` | `dist/MyPro Trading Setup 1.0.0.exe` |
-| macOS | `npm run build:mac` | `dist/MyPro Trading-x.x.x.dmg` |
-| Linux | `npm run build:linux` | `dist/MyPro Trading-x.x.x.AppImage`, `.deb` |
+| Windows | `npm run build:win` | `dist/YieldlyX Setup 1.0.0.exe` |
+| macOS | `npm run build:mac` | `dist/YieldlyX-x.x.x.dmg` |
+| Linux | `npm run build:linux` | `dist/YieldlyX-x.x.x.AppImage`, `.deb` |
 
 All platforms:
 
@@ -62,7 +62,7 @@ powershell -ExecutionPolicy Bypass -File scripts\clean-install.ps1
 npm run build:mac
 ```
 
-Open the `.dmg`, drag **MyPro Trading** to Applications, then launch from Applications.
+Open the `.dmg`, drag **YieldlyX** to Applications, then launch from Applications.
 
 If macOS blocks the app (unsigned build), right-click the app → **Open** → **Open** once to approve.
 
@@ -71,14 +71,14 @@ If macOS blocks the app (unsigned build), right-click the app → **Open** → *
 **AppImage** (portable, most distros):
 
 ```bash
-chmod +x "dist/MyPro Trading-"*.AppImage
-./"dist/MyPro Trading-"*.AppImage
+chmod +x "dist/YieldlyX-"*.AppImage
+./"dist/YieldlyX-"*.AppImage
 ```
 
 **Debian / Ubuntu (.deb):**
 
 ```bash
-sudo dpkg -i dist/mypro-trading_*_amd64.deb
+sudo dpkg -i dist/yieldlyx_*_amd64.deb
 ```
 
 Install missing dependencies if needed:
@@ -93,14 +93,16 @@ Trading data is stored locally per OS:
 
 | OS | Location |
 |----|----------|
-| Windows | `%APPDATA%\TradingApp\opentrader\` |
-| macOS | `~/Library/Application Support/TradingApp/opentrader/` |
-| Linux | `~/.config/TradingApp/opentrader/` |
+| Windows | `%APPDATA%\yieldlyx\opentrader\` |
+| macOS | `~/Library/Application Support/yieldlyx/opentrader/` |
+| Linux | `~/.config/yieldlyx/opentrader/` |
+
+If you used an older build named **TradingApp** or **MyPro Trading**, your data may still be under `%APPDATA%\TradingApp\` — copy the `opentrader` folder into the path above to keep your password and strategies.
 
 ## Troubleshooting
 
 - **Only run one instance** — do not run `npm start` and the installed app together (port 8000 conflict).
-- **Port in use** — quit other MyPro Trading / Electron processes.
+- **Port in use** — quit other YieldlyX / Electron processes.
 - **Linux AppImage** — ensure FUSE is available (`sudo apt install fuse libfuse2` on older Ubuntu).
 
 ## License

@@ -2,6 +2,7 @@ import {
   getOpentraderUiUrl,
   OPENTRADER_HOST,
   OPENTRADER_PORT,
+  OPENTRADER_ROUTES,
 } from "./paths.mjs";
 
 const API_BASE = `http://${OPENTRADER_HOST}:${OPENTRADER_PORT}/api/trpc`;
@@ -70,14 +71,14 @@ export async function hasValidExchangeAccounts(adminPassword) {
  * @param {string} adminPassword
  */
 export async function getOpentraderStartUrl(adminPassword) {
-  const accountsUrl = getOpentraderUiUrl("/dashboard/accounts");
+  const accountsUrl = getOpentraderUiUrl(OPENTRADER_ROUTES.accounts);
 
   try {
     const valid = await getValidExchangeAccounts(adminPassword);
     if (valid.length === 0) {
       return accountsUrl;
     }
-    return getOpentraderUiUrl("/dashboard");
+    return getOpentraderUiUrl(OPENTRADER_ROUTES.bot);
   } catch (err) {
     console.error("[opentrader] could not list exchange accounts:", err);
     return accountsUrl;

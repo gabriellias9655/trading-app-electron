@@ -17,6 +17,7 @@ import {
   stopChildProcess,
   toDatabaseUrl,
 } from "./platform.mjs";
+import { killProcessOnPort } from "./portCleanup.mjs";
 
 const execAsync = promisify(exec);
 
@@ -24,6 +25,8 @@ const execAsync = promisify(exec);
 let daemonProcess = null;
 /** @type {string} */
 let lastDaemonLog = "";
+/** @type {string | null} */
+let lastUserDataPath = null;
 
 export function hasAdminPassword(userDataPath) {
   return existsSync(getOpentraderPaths(userDataPath).passFilePath);
@@ -62,6 +65,26 @@ async function runShellCommand(command, cwd, env) {
     maxBuffer: 10 * 1024 * 1024,
     shell: true,
     windowsHide: process.platform === "win32",
+  });
+}
+
+/**
+ * Packaged builds omit dotfolders unless prebuild generates them; regenerate if missing.
+ * @param {string} pkgRoot
+ * @param {NodeJS.ProcessEnv} env
+ * @param {(message: string) => void} [onStatus]
+ */
+async function ensurePackagedPrismaClient(pkgRoot, env, onStatus) {
+  if (!app.isPackaged) return;
+
+  const generated = join(pkgRoot, "node_modules", ".prisma", "client", "index.js");
+  if (existsSync(generated)) return;
+
+  onStatus?.("Preparing database engine (first packaged run)…");
+  const prismaCli = getPrismaCliPath(pkgRoot);
+  await runElectronAsNode(prismaCli, ["generate", "--generator", "client"], {
+    cwd: pkgRoot,
+    env,
   });
 }
 
@@ -119,6 +142,8 @@ export async function ensureOpentraderData(userDataPath, onStatus) {
 
   const env = { ...process.env, DATABASE_URL: toDatabaseUrl(paths.dbFilePath) };
 
+  await ensurePackagedPrismaClient(pkgRoot, env, onStatus);
+
   if (!existsSync(paths.dbFilePath)) {
     await initDatabase(pkgRoot, env, onStatus);
   }
@@ -132,8 +157,15 @@ export async function ensureOpentraderData(userDataPath, onStatus) {
 /**
  * @param {string} userDataPath
  */
-export function startOpentraderDaemon(userDataPath) {
+export async function freeOpentraderPort() {
+  return killProcessOnPort(OPENTRADER_PORT);
+}
+
+export async function startOpentraderDaemon(userDataPath) {
   if (daemonProcess) return daemonProcess;
+
+  lastUserDataPath = userDataPath;
+  await freeOpentraderPort();
 
   const pkgRoot = getOpentraderPackageRoot();
   const paths = getOpentraderPaths(userDataPath);
@@ -152,7 +184,10 @@ export function startOpentraderDaemon(userDataPath) {
 
   daemonProcess = spawnElectronAsNode(standalonePath, [], {
     cwd: pkgRoot,
-    env: daemonEnv,
+    env: {
+      ...daemonEnv,
+      NODE_PATH: join(pkgRoot, "node_modules"),
+    },
   });
 
   const appendLog = (chunk) => {
@@ -163,17 +198,19 @@ export function startOpentraderDaemon(userDataPath) {
   daemonProcess.stdout?.on("data", appendLog);
   daemonProcess.stderr?.on("data", appendLog);
 
-  daemonProcess.on("exit", (code) => {
-    if (code !== 0 && code !== null) {
-      if (lastDaemonLog.includes("EADDRINUSE")) {
-        console.error(
-          `[opentrader] port ${OPENTRADER_PORT} already in use — reusing existing server`
-        );
-      } else {
-        console.error(`[opentrader] exited with code ${code}`);
-      }
-    }
+  daemonProcess.on("exit", async (code) => {
     daemonProcess = null;
+    if (code !== 0 && code !== null) {
+      if (lastDaemonLog.includes("EADDRINUSE") && lastUserDataPath) {
+        console.error(
+          `[opentrader] port ${OPENTRADER_PORT} in use — stopping blocker and retrying…`
+        );
+        await freeOpentraderPort();
+        await startOpentraderDaemon(lastUserDataPath);
+        return;
+      }
+      console.error(`[opentrader] exited with code ${code}`);
+    }
   });
 
   return daemonProcess;

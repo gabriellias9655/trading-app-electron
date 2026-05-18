@@ -1,4 +1,4 @@
-/* MyPro Trading — respects OpenTrader light/dark via [data-joy-color-scheme] */
+/* YieldlyX — respects OpenTrader light/dark via [data-joy-color-scheme] */
 :root {
   --mypro-chrome-h: 56px;
   --mp-accent: #7c6cff;
@@ -86,14 +86,71 @@ html {
   scroll-behavior: smooth;
   height: 100% !important;
   overflow: hidden !important;
+  font-size: 14px !important;
 }
 
 body {
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif !important;
+  font-family: "Inter", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif !important;
   margin: 0 !important;
   padding: 0 !important;
   height: 100% !important;
   overflow: hidden !important;
+}
+
+#root [class*="Typography-h1"],
+#root [class*="level-h1"],
+#root h1 {
+  font-size: 1.25rem !important;
+  line-height: 1.3 !important;
+}
+
+#root [class*="Typography-h2"],
+#root [class*="level-h2"],
+#root h2 {
+  font-size: 1.1rem !important;
+  line-height: 1.35 !important;
+}
+
+#root [class*="Typography-h3"],
+#root [class*="level-h3"],
+#root h3 {
+  font-size: 0.95rem !important;
+  line-height: 1.4 !important;
+}
+
+#root [class*="Typography-h4"],
+#root [class*="level-h4"],
+#root h4 {
+  font-size: 0.875rem !important;
+}
+
+#root [class*="Typography-body-lg"],
+#root [class*="level-body-lg"] {
+  font-size: 0.875rem !important;
+}
+
+#root [class*="Typography-body-md"],
+#root [class*="Typography-body-sm"],
+#root [class*="level-body-md"],
+#root [class*="level-body-sm"],
+#root p,
+#root li,
+#root label,
+#root td,
+#root th {
+  font-size: inherit !important;
+}
+
+#root button,
+#root [class*="Button-root"] {
+  font-size: 0.8125rem !important;
+}
+
+#root [class*="Input-root"],
+#root input,
+#root select,
+#root textarea {
+  font-size: 0.8125rem !important;
 }
 
 /* Subtle mesh — does not override Joy body background */
@@ -122,6 +179,22 @@ body {
 }
 
 #root {
+  --joy-fontSize-xs: 0.65rem;
+  --joy-fontSize-sm: 0.75rem;
+  --joy-fontSize-md: 0.8125rem;
+  --joy-fontSize-lg: 0.875rem;
+  --joy-fontSize-xl: 1rem;
+  --joy-fontSize-xl2: 1.125rem;
+  --joy-fontSize-xl3: 1.25rem;
+  --joy-fontSize-xl4: 1.375rem;
+  --Font-size-xs: var(--joy-fontSize-xs);
+  --Font-size-sm: var(--joy-fontSize-sm);
+  --Font-size-md: var(--joy-fontSize-md);
+  --Font-size-lg: var(--joy-fontSize-lg);
+  --Font-size-xl: var(--joy-fontSize-xl);
+  --Font-size-xl2: var(--joy-fontSize-xl2);
+  --Font-size-xl3: var(--joy-fontSize-xl3);
+  --Font-size-xl4: var(--joy-fontSize-xl4);
   position: fixed !important;
   top: var(--mypro-chrome-h) !important;
   left: 0 !important;
@@ -133,6 +206,8 @@ body {
   isolation: isolate !important;
   z-index: 1 !important;
   animation: mp-fade-up 0.6s ease both;
+  font-size: var(--joy-fontSize-md) !important;
+  line-height: 1.45 !important;
 }
 
 #root > * {
@@ -155,7 +230,8 @@ body {
   top: 0 !important;
   z-index: 200 !important;
   flex-shrink: 0 !important;
-  padding: 10px 14px !important;
+  padding: 8px 12px !important;
+  font-size: 0.8125rem !important;
   background: linear-gradient(
     180deg,
     var(--mp-surface-glass) 0%,
@@ -172,7 +248,7 @@ body {
   flex: 1 1 auto !important;
   min-height: 0 !important;
   overflow: auto !important;
-  padding: 16px !important;
+  padding: 12px !important;
   box-sizing: border-box !important;
 }
 
@@ -181,10 +257,8 @@ body {
 [class*="JoyCard-root"] {
   border-radius: 16px !important;
   border: 1px solid var(--mp-border) !important;
-  box-shadow: 0 4px 24px var(--mp-shadow) !important;
   transition:
     transform 0.25s ease,
-    box-shadow 0.25s ease,
     border-color 0.25s ease !important;
 }
 
@@ -219,13 +293,14 @@ button[class*="variantSolid"][class*="colorPrimary"] {
 [class*="MuiInput-root"]:focus-within,
 [class*="JoyInput-root"]:focus-within {
   border-color: var(--mp-accent) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mp-accent) 25%, transparent) !important;
+  outline: 2px solid color-mix(in srgb, var(--mp-accent) 35%, transparent) !important;
+  outline-offset: 1px !important;
 }
 
 /* Tables */
 thead th {
   font-weight: 600 !important;
-  font-size: 0.75rem !important;
+  font-size: 0.6875rem !important;
   text-transform: uppercase !important;
   letter-spacing: 0.06em !important;
   border-bottom: 1px solid var(--mp-border) !important;
@@ -252,10 +327,49 @@ a:hover {
   animation: mp-shimmer 1.5s ease-in-out infinite !important;
 }
 
-/* Hide OpenTrader's duplicate theme toggle (MyPro top bar has one) */
+/* Hide OpenTrader's duplicate theme toggle (YieldlyX top bar has one) */
 #root button[class*="variantOutlined"]:has(path[d^="M9.27"]),
 #root button[class*="variantOutlined"]:has(path[d^="M12 9c1.65"]) {
   display: none !important;
+}
+
+/* Hide OpenTrader GitHub footer link */
+#root a[href*="github.com/bludnic/opentrader"],
+#root [data-yx-hidden="github"],
+#root li:has(a[href*="github.com/bludnic/opentrader"]) {
+  display: none !important;
+}
+
+/* YieldlyX icon system */
+.yx-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  flex-shrink: 0;
+}
+
+#root .yx-icon-slot {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 10px;
+  color: var(--mp-text-muted) !important;
+  background: color-mix(in srgb, var(--mp-accent) 8%, transparent) !important;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+#root .yx-icon-slot .yx-icon {
+  width: 22px;
+  height: 22px;
+}
+
+#root [class*="ListItemButton"][aria-selected="true"] .yx-icon-slot,
+#root [class*="ListItemButton"].Mui-selected .yx-icon-slot,
+#root [class*="ListItemButton"][data-selected="true"] .yx-icon-slot {
+  color: var(--mp-teal) !important;
+  background: color-mix(in srgb, var(--mp-teal) 18%, transparent) !important;
 }
 
 /* OpenTrader wordmark — ensure contrast in both schemes */

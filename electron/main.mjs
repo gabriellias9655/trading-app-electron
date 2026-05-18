@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   ensureOpentraderData,
+  freeOpentraderPort,
   hasAdminPassword,
   saveAdminPassword,
   startOpentraderDaemon,
@@ -22,6 +23,7 @@ import { setupTraderChrome } from "./traderChrome.mjs";
 import { DEFAULT_UPLOAD_URL } from "chalk-ycslint";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const APP_NAME = "YieldlyX";
 const OPENTRADER_ORIGIN = `http://${OPENTRADER_HOST}:${OPENTRADER_PORT}`;
 const MIN_PASSWORD_LENGTH = 6;
 
@@ -88,7 +90,7 @@ function createMainWindow({ setupMode = false } = {}) {
       height: setupMode ? 720 : 680,
       resizable: false,
       maximizable: false,
-      title: setupMode ? "Set password — MyPro Trading" : "MyPro Trading",
+      title: setupMode ? `Set password — ${APP_NAME}` : APP_NAME,
       webPreferences: {
         preload: path.join(__dirname, "preload.cjs"),
         contextIsolation: true,
@@ -129,7 +131,11 @@ function openOpentraderInApp() {
   showingTrader = true;
   teardownTraderChrome?.();
   teardownExchangeGuard?.();
-  teardownTraderChrome = setupTraderChrome(mainWindow.webContents, OPENTRADER_ORIGIN);
+  teardownTraderChrome = setupTraderChrome(
+    mainWindow.webContents,
+    OPENTRADER_ORIGIN,
+    () => startupState?.adminPassword
+  );
   teardownExchangeGuard = setupExchangeRouteGuard(
     mainWindow.webContents,
     OPENTRADER_ORIGIN,
@@ -144,7 +150,7 @@ function openOpentraderInApp() {
     mainWindow.setSize(1280, 840);
     mainWindow.center();
   }
-  mainWindow.setTitle("MyPro Trading");
+  mainWindow.setTitle(APP_NAME);
   mainWindow.loadURL(startupState.uiUrl);
 }
 
@@ -156,8 +162,11 @@ async function bootstrap() {
     sendToSplash({ type: "status", message });
   });
 
+  sendToSplash({ type: "status", message: "Freeing port 8000 if needed…" });
+  await freeOpentraderPort();
+
   sendToSplash({ type: "status", message: "Starting trading engine…" });
-  startOpentraderDaemon(userData);
+  await startOpentraderDaemon(userData);
   await waitForOpentraderServer(90_000, (seconds) => {
     sendToSplash({
       type: "status",
@@ -207,7 +216,7 @@ async function runStartup() {
 
   if (firstRun) {
     await promptForAdminPassword();
-    mainWindow?.setTitle("MyPro Trading");
+    mainWindow?.setTitle(APP_NAME);
   }
 
   await bootstrap();

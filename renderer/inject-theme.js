@@ -79,7 +79,7 @@
     attributeFilter: ["data-joy-color-scheme"],
   });
 
-  /** Hide OpenTrader's built-in theme toggle (duplicate of MyPro top bar). */
+  /** Hide OpenTrader's built-in theme toggle (duplicate of YieldlyX top bar). */
   const THEME_ICON_PREFIXES = ["M9.27", "M12 9c1.65"];
 
   function isOpentraderThemeButton(btn) {

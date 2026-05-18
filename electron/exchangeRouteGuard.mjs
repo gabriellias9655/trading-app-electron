@@ -3,7 +3,13 @@ import { hasValidExchangeAccounts } from "./opentraderApi.mjs";
 /** @param {string} hash */
 function needsExchangeRoute(hash) {
   const path = (hash || "").replace(/^#/, "");
-  if (!path || path === "/" || path === "/dashboard" || path === "/dashboard/") {
+  if (
+    !path ||
+    path === "/" ||
+    path === "/dashboard" ||
+    path === "/dashboard/" ||
+    path.startsWith("/dashboard/bot")
+  ) {
     return false;
   }
   if (path.includes("/dashboard/accounts")) {

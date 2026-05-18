@@ -6,6 +6,8 @@ const rendererDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "../
 
 let themeCss = null;
 let themeJs = null;
+let iconsJs = null;
+let iconsInjectJs = null;
 let chromeJs = null;
 let notifyJs = null;
 
@@ -16,6 +18,12 @@ function loadAssets() {
   if (!themeJs) {
     themeJs = readFileSync(path.join(rendererDir, "inject-theme.js"), "utf8");
   }
+  if (!iconsJs) {
+    iconsJs = readFileSync(path.join(rendererDir, "yx-icons.js"), "utf8");
+  }
+  if (!iconsInjectJs) {
+    iconsInjectJs = readFileSync(path.join(rendererDir, "inject-icons.js"), "utf8");
+  }
   if (!chromeJs) {
     chromeJs = readFileSync(path.join(rendererDir, "inject-chrome.js"), "utf8");
   }
@@ -25,11 +33,12 @@ function loadAssets() {
 }
 
 /**
- * Inject MyPro top bar, help panel, and dashboard styling into OpenTrader.
+ * Inject YieldlyX top bar, help panel, and dashboard styling into OpenTrader.
  * @param {import("electron").WebContents} webContents
  * @param {string} origin e.g. http://127.0.0.1:8000
+ * @param {() => string | undefined} [getAdminPassword]
  */
-export function setupTraderChrome(webContents, origin) {
+export function setupTraderChrome(webContents, origin, getAdminPassword) {
   loadAssets();
 
   /** @type {string | null} */
@@ -40,12 +49,21 @@ export function setupTraderChrome(webContents, origin) {
     if (!url.startsWith(origin)) return;
 
     try {
+      const password = getAdminPassword?.();
+      if (password) {
+        await webContents.executeJavaScript(
+          `(function(){try{localStorage.setItem("ADMIN_PASSWORD",${JSON.stringify(password)});}catch(e){}})();`,
+          true
+        );
+      }
       if (cssKey === null) {
         cssKey = await webContents.insertCSS(themeCss, { cssOrigin: "user" });
       }
       await webContents.executeJavaScript(themeJs, true);
+      await webContents.executeJavaScript(iconsJs, true);
       await webContents.executeJavaScript(chromeJs, true);
       await webContents.executeJavaScript(notifyJs, true);
+      await webContents.executeJavaScript(iconsInjectJs, true);
     } catch (err) {
       console.error("[traderChrome]", err);
     }

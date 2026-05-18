@@ -2,7 +2,7 @@
   if (window.myproShowExchangeRequired) return;
 
   const NOTIFY_STYLES = `
-    #mypro-notify-root { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+    #mypro-notify-root { font-family: "Inter", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif; }
     #mypro-notify-backdrop {
       position: fixed; inset: 0; z-index: 2147483645;
       background: rgba(7, 6, 15, 0.55);
@@ -21,9 +21,6 @@
       border-radius: 20px;
       background: linear-gradient(165deg, #1a1834 0%, #12101f 100%);
       border: 1px solid rgba(124, 108, 255, 0.35);
-      box-shadow:
-        0 24px 64px rgba(0, 0, 0, 0.55),
-        0 0 0 1px rgba(46, 230, 197, 0.08) inset;
       text-align: center;
       transform: translateY(16px) scale(0.96);
       transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
@@ -38,9 +35,8 @@
       background: linear-gradient(135deg, rgba(124,108,255,0.25), rgba(46,230,197,0.15));
       border: 1px solid rgba(46, 230, 197, 0.3);
       color: #2ee6c5;
-      font-size: 28px;
-      line-height: 1;
     }
+    #mypro-notify-icon .yx-icon { width: 28px; height: 28px; }
     #mypro-notify-title {
       margin: 0 0 10px; font-size: 1.2rem; font-weight: 700;
       color: #f4f2ff; letter-spacing: -0.02em;
@@ -57,12 +53,10 @@
       width: 100%; padding: 13px 18px; border: none; border-radius: 12px;
       background: linear-gradient(135deg, #7c6cff, #5b4ccc);
       color: #fff; font-size: 0.95rem; font-weight: 600; cursor: pointer;
-      box-shadow: 0 6px 20px rgba(124, 108, 255, 0.4);
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s;
     }
     #mypro-notify-btn-primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 10px 28px rgba(124, 108, 255, 0.5);
     }
     #mypro-notify-btn-secondary {
       width: 100%; padding: 10px; border: none; border-radius: 10px;
@@ -76,7 +70,6 @@
     }
     html[data-joy-color-scheme="light"] #mypro-notify-card {
       background: linear-gradient(165deg, #ffffff 0%, #f4f3f8 100%);
-      box-shadow: 0 24px 64px rgba(124, 108, 255, 0.18);
     }
     html[data-joy-color-scheme="light"] #mypro-notify-title { color: #1a1730; }
     html[data-joy-color-scheme="light"] #mypro-notify-message { color: #5c5878; }
@@ -102,6 +95,11 @@
   `;
 
   document.documentElement.appendChild(root);
+
+  const notifyIcon = document.getElementById("mypro-notify-icon");
+  if (notifyIcon && typeof window.yxIcon === "function") {
+    notifyIcon.innerHTML = window.yxIcon("link");
+  }
 
   const backdrop = document.getElementById("mypro-notify-backdrop");
   const titleEl = document.getElementById("mypro-notify-title");
