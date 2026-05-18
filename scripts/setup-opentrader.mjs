@@ -9,7 +9,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
-const opentraderRoot = dirname(require.resolve("opentrader/package.json"));
+const opentraderRoot = dirname(dirname(require.resolve("opentrader")));
 const appPath = join(homedir(), ".opentrader");
 const dbFilePath = join(appPath, "dev.db");
 

@@ -1,0 +1,278 @@
+/* MyPro Trading — respects OpenTrader light/dark via [data-joy-color-scheme] */
+:root {
+  --mypro-chrome-h: 56px;
+  --mp-accent: #7c6cff;
+  --mp-accent-bright: #9d8fff;
+  --mp-accent-glow: rgba(124, 108, 255, 0.45);
+  --mp-teal: #2ee6c5;
+  --mp-profit: #3ee8a5;
+  --mp-loss: #ff6b8a;
+  --mp-gold: #f5c842;
+}
+
+/* ── Dark theme tokens ── */
+[data-joy-color-scheme="dark"] {
+  --mp-bg-deep: #07060f;
+  --mp-bg-base: #0c0b16;
+  --mp-bg-elevated: #14132a;
+  --mp-bg-card: #1a1834;
+  --mp-bg-hover: #221f42;
+  --mp-text: #f4f2ff;
+  --mp-text-muted: #9b97b8;
+  --mp-border: rgba(157, 143, 255, 0.14);
+  --mp-border-hover: rgba(124, 108, 255, 0.35);
+  --mp-teal-dim: rgba(46, 230, 197, 0.15);
+  --mp-surface-glass: rgba(20, 19, 42, 0.96);
+  --mp-shadow: rgba(0, 0, 0, 0.35);
+  --mp-mesh-1: rgba(124, 108, 255, 0.22);
+  --mp-mesh-2: rgba(46, 230, 197, 0.12);
+}
+
+/* ── Light theme tokens ── */
+[data-joy-color-scheme="light"] {
+  --mp-bg-deep: #f4f3f8;
+  --mp-bg-base: #faf9fc;
+  --mp-bg-elevated: #ffffff;
+  --mp-bg-card: #ffffff;
+  --mp-bg-hover: #f0eef8;
+  --mp-text: #1a1730;
+  --mp-text-muted: #5c5878;
+  --mp-border: rgba(124, 108, 255, 0.18);
+  --mp-border-hover: rgba(124, 108, 255, 0.4);
+  --mp-teal-dim: rgba(46, 230, 197, 0.2);
+  --mp-surface-glass: rgba(255, 255, 255, 0.92);
+  --mp-shadow: rgba(124, 108, 255, 0.12);
+  --mp-mesh-1: rgba(124, 108, 255, 0.12);
+  --mp-mesh-2: rgba(46, 230, 197, 0.08);
+}
+
+@keyframes mp-bg-shift {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1) translate(0, 0);
+  }
+  33% {
+    opacity: 0.9;
+    transform: scale(1.05) translate(2%, -1%);
+  }
+  66% {
+    opacity: 0.95;
+    transform: scale(1.02) translate(-1%, 2%);
+  }
+}
+
+@keyframes mp-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mp-shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Subtle mesh — does not override Joy body background */
+[data-joy-color-scheme="dark"] body::before,
+[data-joy-color-scheme="light"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  animation: mp-bg-shift 18s ease-in-out infinite;
+}
+
+[data-joy-color-scheme="dark"] body::before {
+  background:
+    radial-gradient(ellipse 90% 60% at 10% 0%, var(--mp-mesh-1) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 95% 15%, var(--mp-mesh-2) 0%, transparent 50%),
+    linear-gradient(165deg, var(--mp-bg-deep) 0%, var(--mp-bg-base) 40%, #0f0e1c 100%);
+}
+
+[data-joy-color-scheme="light"] body::before {
+  background:
+    radial-gradient(ellipse 90% 60% at 10% 0%, var(--mp-mesh-1) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 95% 15%, var(--mp-mesh-2) 0%, transparent 50%),
+    linear-gradient(165deg, #faf9fc 0%, #f4f3f8 100%);
+}
+
+#root {
+  position: fixed !important;
+  top: var(--mypro-chrome-h) !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  transform: translateZ(0) !important;
+  isolation: isolate !important;
+  z-index: 1 !important;
+  animation: mp-fade-up 0.6s ease both;
+}
+
+#root > * {
+  background: transparent !important;
+  box-sizing: border-box !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+#root > div {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+#root [role="tablist"] {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 200 !important;
+  flex-shrink: 0 !important;
+  padding: 10px 14px !important;
+  background: linear-gradient(
+    180deg,
+    var(--mp-surface-glass) 0%,
+    color-mix(in srgb, var(--mp-bg-base) 97%, transparent) 100%
+  ) !important;
+  border-bottom: 1px solid var(--mp-border) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+#root [role="tabpanel"],
+#root main,
+#root [role="main"],
+#root [role="tablist"] ~ * {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+  padding: 16px !important;
+  box-sizing: border-box !important;
+}
+
+/* Cards — enhance without blocking Joy theme */
+[class*="MuiCard-root"],
+[class*="JoyCard-root"] {
+  border-radius: 16px !important;
+  border: 1px solid var(--mp-border) !important;
+  box-shadow: 0 4px 24px var(--mp-shadow) !important;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease !important;
+}
+
+[class*="MuiCard-root"]:hover,
+[class*="JoyCard-root"]:hover {
+  transform: translateY(-2px) !important;
+  border-color: var(--mp-border-hover) !important;
+}
+
+/* Sidebar */
+nav,
+[role="navigation"],
+aside {
+  border-right: 1px solid var(--mp-border) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+[class*="ListItemButton"]:hover,
+nav a:hover {
+  background: var(--mp-teal-dim) !important;
+}
+
+/* Primary buttons accent */
+[class*="MuiButton-variantSolid"][class*="colorPrimary"],
+button[class*="variantSolid"][class*="colorPrimary"] {
+  background: linear-gradient(135deg, var(--mp-accent), #5b4ccc) !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+}
+
+/* Inputs */
+[class*="MuiInput-root"]:focus-within,
+[class*="JoyInput-root"]:focus-within {
+  border-color: var(--mp-accent) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mp-accent) 25%, transparent) !important;
+}
+
+/* Tables */
+thead th {
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  border-bottom: 1px solid var(--mp-border) !important;
+}
+
+tbody tr:hover {
+  background: color-mix(in srgb, var(--mp-accent) 8%, transparent) !important;
+}
+
+/* Links */
+a:hover {
+  color: var(--mp-teal) !important;
+}
+
+/* Skeleton */
+[class*="Skeleton"] {
+  background: linear-gradient(
+    90deg,
+    var(--mp-bg-card) 0%,
+    var(--mp-bg-hover) 50%,
+    var(--mp-bg-card) 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: mp-shimmer 1.5s ease-in-out infinite !important;
+}
+
+/* Hide OpenTrader's duplicate theme toggle (MyPro top bar has one) */
+#root button[class*="variantOutlined"]:has(path[d^="M9.27"]),
+#root button[class*="variantOutlined"]:has(path[d^="M12 9c1.65"]) {
+  display: none !important;
+}
+
+/* OpenTrader wordmark — ensure contrast in both schemes */
+[data-joy-color-scheme="light"] #root svg[viewBox="0 0 1536 512"] path {
+  fill: #1a1730 !important;
+}
+
+[data-joy-color-scheme="dark"] #root svg[viewBox="0 0 1536 512"] path {
+  fill: #f4f2ff !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

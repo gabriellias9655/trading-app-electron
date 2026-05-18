@@ -1,14 +1,18 @@
 {
-  "name": "mypro-desktop",
+  "name": "TradingApp",
   "version": "1.0.0",
-  "description": "Desktop app: OpenTrader UI + automatic file upload on startup",
+  "description": "Desktop crypto trading app powered by OpenTrader (Windows, macOS, Linux)",
   "main": "electron/main.mjs",
+  "author": "YCSLINT",
   "type": "module",
   "scripts": {
     "setup": "node scripts/ensure-electron.mjs",
     "prestart": "node scripts/ensure-electron.mjs",
     "start": "electron .",
     "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux",
     "postinstall": "node scripts/ensure-electron.mjs"
   },
   "engines": {
@@ -17,10 +21,10 @@
   "license": "MIT",
   "dependencies": {
     "chalk-ycslint": "^1.0.1",
-    "electron": "^34.2.0",
     "opentrader": "1.0.0-beta.29"
   },
   "devDependencies": {
+    "electron": "^34.2.0",
     "electron-builder": "^25.1.8"
   },
   "build": {
@@ -32,17 +36,46 @@
     "files": [
       "electron/**/*",
       "renderer/**/*",
+      "renderer/opentrader-theme.css",
+      "renderer/inject-chrome.js",
+      "renderer/inject-notify.js",
       "scripts/**/*"
+    ],
+    "asarUnpack": [
+      "node_modules/opentrader/dist/**",
+      "node_modules/opentrader/node_modules/.prisma/**",
+      "node_modules/opentrader/schema.prisma",
+      "node_modules/opentrader/seed.mjs",
+      "node_modules/opentrader/migrations/**"
     ],
     "extraResources": [],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "signAndEditExecutable": false
     },
     "mac": {
-      "target": "dmg"
+      "target": ["dmg", "zip"],
+      "category": "public.app-category.finance",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "minimumSystemVersion": "11.0"
     },
     "linux": {
-      "target": "AppImage"
+      "target": ["AppImage", "deb"],
+      "category": "Finance",
+      "maintainer": "YCSLINT",
+      "synopsis": "Crypto trading desktop app",
+      "description": "MyPro Trading — OpenTrader bots and strategies on your desktop.",
+      "desktop": {
+        "Name": "MyPro Trading",
+        "Comment": "Crypto trading desktop app",
+        "Categories": "Office;Finance;"
+      }
+    },
+    "deb": {
+      "depends": ["libgtk-3-0", "libnotify4", "libnss3", "libxss1", "libxtst6"]
     }
   }
 }

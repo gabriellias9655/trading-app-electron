@@ -3,35 +3,144 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'" />
-    <title>MyPro Desktop</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'"
+    />
+    <title>MyPro Trading</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="card">
-      <h1>MyPro Desktop</h1>
-      <p class="muted">OpenTrader + automatic file sync on startup</p>
+    <div class="bg" aria-hidden="true">
+      <span class="orb orb-a"></span>
+      <span class="orb orb-b"></span>
+      <span class="orb orb-c"></span>
+      <span class="grid"></span>
+    </div>
 
-      <p id="status" class="status">Starting…</p>
+    <main class="shell">
+      <header class="hero">
+        <div class="logo" aria-hidden="true">
+          <span class="logo-ring"></span>
+          <span class="logo-core">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M4 16l4-6 4 3 4-7 4 10"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+        </div>
+        <p class="eyebrow">MyPro Desktop</p>
+        <h1>Professional crypto trading</h1>
+        <p class="tagline">Powered by OpenTrader — bots, strategies, and live markets on your desktop.</p>
+      </header>
 
-      <div id="progressWrap" class="progress-wrap" hidden>
-        <div class="progress-bar" id="progressBar"></div>
-        <p id="progressText" class="progress-text"></p>
-      </div>
-
-      <section id="passwordBox" class="info-box" hidden>
-        <h2>OpenTrader login</h2>
-        <p class="muted small">When the dashboard asks for a password, use:</p>
-        <code id="adminPassword" class="password"></code>
+      <section id="setupPasswordBox" class="panel setup-panel" hidden>
+        <h2>Create your trading password</h2>
+        <p class="panel-lead">First launch only. You will use this to unlock the trading dashboard on this computer.</p>
+        <label class="field">
+          <span>Password</span>
+          <input type="password" id="setupPassword" autocomplete="new-password" minlength="6" />
+        </label>
+        <label class="field">
+          <span>Confirm password</span>
+          <input type="password" id="setupPasswordConfirm" autocomplete="new-password" minlength="6" />
+        </label>
+        <p id="setupError" class="notice error" hidden></p>
+        <button type="button" id="btnSavePassword" class="btn primary">Save and start trading</button>
       </section>
 
-      <div class="actions">
-        <button type="button" id="btnOpenTrader" class="btn primary" disabled>
-          Open trading dashboard
-        </button>
+      <div id="mainContent" class="main-flow" hidden>
+        <div class="status-card">
+          <div class="loader" id="loader" aria-hidden="true">
+            <span class="loader-ring"></span>
+            <span class="loader-dot"></span>
+          </div>
+          <p id="status" class="status-text">Initializing trading engine…</p>
+          <div class="progress-track" id="progressTrack" aria-hidden="true">
+            <span class="progress-fill" id="progressFill"></span>
+          </div>
+        </div>
+
+        <section id="passwordBox" class="panel cred-panel" hidden>
+          <h2>Dashboard password</h2>
+          <p class="panel-lead">When OpenTrader asks you to sign in, use this password:</p>
+          <button type="button" id="adminPassword" class="password-chip" title="Click to copy"></button>
+        </section>
+
+        <div class="actions">
+          <button type="button" id="btnOpenTrader" class="btn primary" disabled>
+            Open trading dashboard
+          </button>
+          <p class="hint">Opens automatically when the engine is ready.</p>
+        </div>
+
+        <p id="errorNotice" class="notice error" hidden></p>
       </div>
 
-      <p id="uploadSummary" class="summary" hidden></p>
+      <section class="guide panel" aria-labelledby="guide-title">
+        <div class="guide-head">
+          <h2 id="guide-title">Trading guide</h2>
+          <button type="button" id="btnToggleGuide" class="btn ghost" aria-expanded="true">
+            Hide
+          </button>
+        </div>
+        <div id="guideBody" class="guide-body">
+          <article class="guide-step">
+            <span class="step-num">1</span>
+            <div>
+              <h3>Connect your exchange</h3>
+              <p>
+                In the dashboard, open <strong>Accounts</strong> and add an exchange (Binance, Bybit, OKX, and others supported by OpenTrader).
+                Use API keys with <strong>trade</strong> permission only — never enable withdrawal on bot keys.
+              </p>
+            </div>
+          </article>
+          <article class="guide-step">
+            <span class="step-num">2</span>
+            <div>
+              <h3>Sign in to the dashboard</h3>
+              <p>
+                Enter the admin password shown above when prompted. This password is stored locally on your PC and is not sent to any website.
+              </p>
+            </div>
+          </article>
+          <article class="guide-step">
+            <span class="step-num">3</span>
+            <div>
+              <h3>Choose a strategy or bot</h3>
+              <p>
+                Browse built-in strategies (grid, DCA, RSI, and more) or deploy a custom strategy. Set your trading pair, position size, and risk limits before going live.
+              </p>
+            </div>
+          </article>
+          <article class="guide-step">
+            <span class="step-num">4</span>
+            <div>
+              <h3>Start on paper, then go live</h3>
+              <p>
+                Test with small size or demo mode if your exchange supports it. Confirm fills, fees, and stop-loss behavior before scaling capital.
+              </p>
+            </div>
+          </article>
+          <article class="guide-step">
+            <span class="step-num">5</span>
+            <div>
+              <h3>Monitor and manage risk</h3>
+              <p>
+                Watch open positions, P&amp;L, and bot logs in the dashboard. Pause bots during high volatility or news events. Never risk more than you can afford to lose.
+              </p>
+            </div>
+          </article>
+          <aside class="guide-tip">
+            <strong>Tip:</strong> Keep this app running while bots are active. Closing MyPro Trading stops the local trading engine on your machine.
+          </aside>
+        </div>
+      </section>
     </main>
     <script src="app.js"></script>
   </body>

