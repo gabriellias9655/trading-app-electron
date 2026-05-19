@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,6 +17,16 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <header class="app-titlebar">
+      <img class="app-titlebar-logo" src="assets/yieldlyx-logo.png" alt="YieldlyX" />
+      <span class="app-titlebar-drag"></span>
+      <div class="yx-window-controls">
+        <button type="button" class="yx-win-btn" data-yx-win-min aria-label="Minimize"></button>
+        <button type="button" class="yx-win-btn" data-yx-win-max aria-label="Maximize"></button>
+        <button type="button" class="yx-win-btn yx-win-close" data-yx-win-close aria-label="Close"></button>
+      </div>
+    </header>
+    <div class="app-titlebar-spacer" aria-hidden="true"></div>
     <div class="bg" aria-hidden="true">
       <span class="orb orb-a"></span>
       <span class="orb orb-b"></span>
@@ -26,28 +36,18 @@
 
     <main class="shell">
       <header class="hero">
-        <div class="logo" aria-hidden="true">
-          <span class="logo-ring"></span>
-          <span class="logo-core">
-            <svg class="yx-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M3 3v18h18"
-                stroke="currentColor"
-                stroke-width="1.75"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M7 15l4-5 3 3 5-7"
-                stroke="currentColor"
-                stroke-width="1.75"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </span>
+        <div class="hero-brand" aria-label="YieldlyX">
+          <img
+            class="logo-image"
+            src="assets/yieldlyx-logo.png"
+            alt=""
+            width="587"
+            height="735"
+            decoding="async"
+            fetchpriority="high"
+          />
         </div>
-        <p class="eyebrow">YieldlyX</p>
+        <p class="eyebrow visually-hidden">YieldlyX</p>
         <h1>Professional crypto trading</h1>
         <p class="tagline">Powered by OpenTrader — bots, strategies, and live markets on your desktop.</p>
       </header>
@@ -78,12 +78,6 @@
             <span class="progress-fill" id="progressFill"></span>
           </div>
         </div>
-
-        <section id="passwordBox" class="panel cred-panel" hidden>
-          <h2>Dashboard password</h2>
-          <p class="panel-lead">When OpenTrader asks you to sign in, use this password:</p>
-          <button type="button" id="adminPassword" class="password-chip" title="Click to copy"></button>
-        </section>
 
         <div class="actions">
           <button type="button" id="btnOpenTrader" class="btn primary" disabled>
@@ -118,7 +112,7 @@
             <div>
               <h3>Sign in to the dashboard</h3>
               <p>
-                Enter the admin password shown above when prompted. This password is stored locally on your PC and is not sent to any website.
+                Enter the trading password you created when prompted. It is stored only on this computer and is not sent to any website.
               </p>
             </div>
           </article>
@@ -155,6 +149,8 @@
         </div>
       </section>
     </main>
+    <script src="yx-icons.js"></script>
+    <script src="window-controls.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

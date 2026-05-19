@@ -352,12 +352,12 @@ a:hover {
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  min-width: 34px;
-  min-height: 34px;
-  border-radius: 10px;
+  min-width: 28px;
+  min-height: 28px;
+  border-radius: 0;
   color: var(--mp-text-muted) !important;
-  background: color-mix(in srgb, var(--mp-accent) 8%, transparent) !important;
-  transition: color 0.2s ease, background 0.2s ease;
+  background: transparent !important;
+  transition: color 0.2s ease;
 }
 
 #root .yx-icon-slot .yx-icon {
@@ -369,7 +369,7 @@ a:hover {
 #root [class*="ListItemButton"].Mui-selected .yx-icon-slot,
 #root [class*="ListItemButton"][data-selected="true"] .yx-icon-slot {
   color: var(--mp-teal) !important;
-  background: color-mix(in srgb, var(--mp-teal) 18%, transparent) !important;
+  background: transparent !important;
 }
 
 /* OpenTrader wordmark — ensure contrast in both schemes */

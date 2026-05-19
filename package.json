@@ -10,7 +10,8 @@
     "prestart": "node scripts/ensure-electron.mjs",
     "start": "electron .",
     "kill:engine": "node scripts/kill-port-8000.mjs",
-    "prebuild": "node scripts/generate-opentrader-prisma.mjs",
+    "prebuild": "node scripts/generate-opentrader-prisma.mjs && node scripts/generate-app-icon.mjs",
+    "icons": "node scripts/generate-app-icon.mjs",
     "build": "electron-builder",
     "build:win": "electron-builder --win",
     "build:mac": "electron-builder --mac",
@@ -27,11 +28,13 @@
   },
   "devDependencies": {
     "electron": "^34.2.0",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^25.1.8",
+    "sharp": "^0.34.5"
   },
   "build": {
     "appId": "com.yieldlyx.desktop",
     "productName": "YieldlyX",
+    "icon": "build/icon.png",
     "directories": {
       "output": "dist"
     },
@@ -52,7 +55,10 @@
       "signAndEditExecutable": false
     },
     "mac": {
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "category": "public.app-category.finance",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
@@ -61,7 +67,10 @@
       "minimumSystemVersion": "11.0"
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "Finance",
       "maintainer": "YCSLINT",
       "synopsis": "Crypto trading desktop app",
@@ -73,7 +82,13 @@
       }
     },
     "deb": {
-      "depends": ["libgtk-3-0", "libnotify4", "libnss3", "libxss1", "libxtst6"]
+      "depends": [
+        "libgtk-3-0",
+        "libnotify4",
+        "libnss3",
+        "libxss1",
+        "libxtst6"
+      ]
     },
     "afterPack": "scripts/after-pack.mjs"
   }

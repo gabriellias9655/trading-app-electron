@@ -137,20 +137,6 @@
       --mp-help-code-border: rgba(124,108,255,0.28);
       --mp-help-divider: rgba(124,108,255,0.2);
     }
-    html[data-joy-color-scheme="light"] #mypro-topbar .brand {
-      background: none;
-      -webkit-background-clip: unset;
-      background-clip: unset;
-      color: #1a1730;
-      animation: none;
-    }
-    html[data-joy-color-scheme="light"] #mypro-topbar .brand svg {
-      color: #5b4ccc;
-      filter: none;
-    }
-    html[data-joy-color-scheme="dark"] #mypro-topbar .brand svg {
-      color: var(--mp-teal);
-    }
     @keyframes mp-bar-in {
       from { transform: translateY(-100%); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
@@ -170,31 +156,96 @@
     #mypro-topbar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 2147483647;
       height: var(--bar-h); min-height: var(--bar-h); max-height: var(--bar-h);
-      display: flex; align-items: center; gap: 14px;
-      padding: 0 18px; box-sizing: border-box;
+      display: flex; align-items: stretch; gap: 8px;
+      padding: 0 0 0 14px; box-sizing: border-box;
       background: var(--mp-bar-bg);
       border-bottom: 1px solid var(--mp-bar-border);
       backdrop-filter: blur(20px) saturate(1.2);
       animation: mp-bar-in 0.5s cubic-bezier(0.4,0,0.2,1) both;
+      -webkit-app-region: drag;
     }
+    #mypro-topbar .brand,
+    #mypro-topbar .topbar-actions,
+    #mypro-topbar .topbar-actions button,
+    #mypro-topbar .yx-window-controls,
+    #mypro-topbar .yx-window-controls button {
+      -webkit-app-region: no-drag;
+    }
+    #mypro-topbar .yx-window-controls {
+      display: flex; align-items: stretch; gap: 0; flex-shrink: 0;
+      margin-left: 4px;
+      height: var(--bar-h);
+    }
+    #mypro-topbar .yx-win-btn {
+      width: 46px; height: 100%; padding: 0; border: none; border-radius: 0;
+      background: transparent; color: var(--mp-muted); cursor: pointer;
+      display: grid; place-items: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    #mypro-topbar .yx-win-btn:hover {
+      background: color-mix(in srgb, var(--mp-violet) 14%, transparent);
+      color: var(--mp-text);
+    }
+    #mypro-topbar .yx-win-btn.yx-win-close:hover {
+      background: #e5484d; color: #fff;
+    }
+    #mypro-topbar .yx-win-btn .yx-icon { width: 14px; height: 14px; }
     #mypro-topbar::after {
       content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
       background: linear-gradient(90deg, transparent, var(--mp-teal), var(--mp-violet), transparent);
       opacity: 0.6;
     }
     #mypro-topbar .brand {
-      display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px;
-      background: linear-gradient(135deg, #f4f2ff 20%, var(--mp-teal) 60%, var(--mp-violet) 100%);
-      background-size: 200% auto;
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-      animation: mp-brand-shine 6s ease-in-out infinite;
+      display: flex; align-items: center; gap: 12px;
+      align-self: center; flex-shrink: 0;
     }
-    #mypro-topbar .brand svg {
-      width: 24px; height: 24px; color: var(--mp-teal);
+    #mypro-topbar .yx-brand-logo {
+      display: block;
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      object-fit: cover;
+      object-position: top center;
+    }
+    #mypro-topbar .yx-brand-wordmark {
+      display: flex;
+      align-items: baseline;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    #mypro-topbar .yx-brand-yieldly {
+      background: linear-gradient(105deg, #00d4ff 0%, #00b8d4 42%, #008f8c 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    #mypro-topbar .yx-brand-x {
+      background: linear-gradient(180deg, #ffc04d 0%, #ff8c00 52%, #e86a00 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    #mypro-topbar .topbar-drag {
+      flex: 1;
+      min-width: 32px;
+      height: 100%;
+      -webkit-app-region: drag;
+    }
+    #mypro-topbar .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      align-self: center;
+      -webkit-app-region: no-drag;
     }
     #mypro-topbar .status {
       display: flex; align-items: center; gap: 8px; font-size: 12px;
-      color: var(--mp-muted); margin-left: auto; font-weight: 500;
+      color: var(--mp-muted); font-weight: 500;
+      flex-shrink: 0;
     }
     #mypro-topbar .status-dot {
       width: 9px; height: 9px; border-radius: 50%;
@@ -204,11 +255,10 @@
     #mypro-chrome-root .yx-icon {
       width: 20px; height: 20px; display: block; flex-shrink: 0;
     }
-    #mypro-topbar .brand .yx-icon { width: 22px; height: 22px; color: var(--mp-teal); }
     #mypro-btn-theme {
       width: 40px; height: 40px; padding: 0; border-radius: 12px;
       border: 1px solid var(--mp-bar-border);
-      background: color-mix(in srgb, var(--mp-violet) 12%, transparent);
+      background: transparent;
       color: var(--mp-text);
       cursor: pointer; flex-shrink: 0;
       display: grid; place-items: center;
@@ -323,6 +373,10 @@
 
   const ic = (name) =>
     typeof window.yxIcon === "function" ? window.yxIcon(name) : "";
+  const logoSrc =
+    typeof window.__YX_LOGO_URL === "string" ? window.__YX_LOGO_URL : "";
+  const brandWordmark =
+    '<span class="yx-brand-wordmark"><span class="yx-brand-yieldly">Yieldly</span><span class="yx-brand-x">X</span></span>';
 
   const root = document.createElement("div");
   root.id = "mypro-chrome-root";
@@ -330,13 +384,24 @@
   const topbar = document.createElement("header");
   topbar.id = "mypro-topbar";
   topbar.innerHTML = `
-    <div class="brand">
-      ${ic("brand")}
-      YieldlyX
+    <div class="brand" aria-label="YieldlyX">
+      ${
+        logoSrc
+          ? `<img class="yx-brand-logo" src="${logoSrc}" alt="" />${brandWordmark}`
+          : `${ic("brand")}${brandWordmark}`
+      }
     </div>
-    <div class="status"><span class="status-dot"></span> Engine online</div>
-    <button type="button" id="mypro-btn-theme" aria-label="Toggle light/dark theme" title="Toggle theme">${ic("sun")}</button>
-    <button type="button" id="mypro-btn-help">${ic("help")}<span>Help &amp; guide</span></button>
+    <span class="topbar-drag" aria-hidden="true"></span>
+    <div class="topbar-actions">
+      <div class="status"><span class="status-dot"></span> Engine online</div>
+      <button type="button" id="mypro-btn-theme" aria-label="Toggle light/dark theme" title="Toggle theme">${ic("sun")}</button>
+      <button type="button" id="mypro-btn-help">${ic("help")}<span>Help &amp; guide</span></button>
+    </div>
+    <div class="yx-window-controls">
+      <button type="button" class="yx-win-btn" data-yx-win-min aria-label="Minimize"></button>
+      <button type="button" class="yx-win-btn" data-yx-win-max aria-label="Maximize"></button>
+      <button type="button" class="yx-win-btn yx-win-close" data-yx-win-close aria-label="Close"></button>
+    </div>
   `;
 
   const backdrop = document.createElement("div");
@@ -429,4 +494,8 @@
   showSection(HELP_SECTIONS[0].id);
 
   document.documentElement.style.setProperty("--mypro-chrome-h", "56px");
+
+  if (typeof window.yxBindWindowControls === "function") {
+    window.yxBindWindowControls(root);
+  }
 })();

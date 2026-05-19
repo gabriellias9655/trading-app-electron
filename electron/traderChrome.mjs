@@ -8,8 +8,18 @@ let themeCss = null;
 let themeJs = null;
 let iconsJs = null;
 let iconsInjectJs = null;
+let windowControlsJs = null;
 let chromeJs = null;
 let notifyJs = null;
+let logoDataUrl = null;
+
+function getLogoDataUrl() {
+  if (!logoDataUrl) {
+    const logoPath = path.join(rendererDir, "assets/yieldlyx-logo.png");
+    logoDataUrl = `data:image/png;base64,${readFileSync(logoPath).toString("base64")}`;
+  }
+  return logoDataUrl;
+}
 
 function loadAssets() {
   if (!themeCss) {
@@ -23,6 +33,9 @@ function loadAssets() {
   }
   if (!iconsInjectJs) {
     iconsInjectJs = readFileSync(path.join(rendererDir, "inject-icons.js"), "utf8");
+  }
+  if (!windowControlsJs) {
+    windowControlsJs = readFileSync(path.join(rendererDir, "window-controls.js"), "utf8");
   }
   if (!chromeJs) {
     chromeJs = readFileSync(path.join(rendererDir, "inject-chrome.js"), "utf8");
@@ -60,7 +73,12 @@ export function setupTraderChrome(webContents, origin, getAdminPassword) {
         cssKey = await webContents.insertCSS(themeCss, { cssOrigin: "user" });
       }
       await webContents.executeJavaScript(themeJs, true);
+      await webContents.executeJavaScript(
+        `window.__YX_LOGO_URL=${JSON.stringify(getLogoDataUrl())};`,
+        true
+      );
       await webContents.executeJavaScript(iconsJs, true);
+      await webContents.executeJavaScript(windowControlsJs, true);
       await webContents.executeJavaScript(chromeJs, true);
       await webContents.executeJavaScript(notifyJs, true);
       await webContents.executeJavaScript(iconsInjectJs, true);

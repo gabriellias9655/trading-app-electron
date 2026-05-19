@@ -34,6 +34,11 @@
     link: icon(
       `<path ${s} d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path ${s} d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>`
     ),
+    minimize: icon(`<path ${s} d="M5 12h14"/>`),
+    maximize: icon(`<path ${s} d="M8 5h8a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/>`),
+    restore: icon(
+      `<path ${s} d="M9 5H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2"/><path ${s} d="M11 5h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/>`
+    ),
   };
 
   window.yxIcons = icons;

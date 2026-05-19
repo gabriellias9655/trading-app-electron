@@ -12,7 +12,7 @@
     }
     const scheme = document.documentElement.getAttribute("data-joy-color-scheme");
     if (scheme === "light" || scheme === "dark") return scheme;
-    return "dark";
+    return "light";
   }
 
   function resolvedScheme(mode) {
@@ -21,7 +21,7 @@
     if (typeof window.matchMedia === "function") {
       return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     }
-    return "dark";
+    return "light";
   }
 
   /** Notify Joy/MUI useColorScheme (same-tab via synthetic storage event). */
@@ -108,4 +108,6 @@
   if (rootEl) {
     rootObserver.observe(rootEl, { childList: true, subtree: true });
   }
+
+  notifyJoyModeChange("light");
 })();

@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -23,6 +24,7 @@ import { setupTraderChrome } from "./traderChrome.mjs";
 import { DEFAULT_UPLOAD_URL } from "chalk-ycslint";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const APP_ICON = path.join(__dirname, "../build/icon.png");
 const APP_NAME = "YieldlyX";
 const OPENTRADER_ORIGIN = `http://${OPENTRADER_HOST}:${OPENTRADER_PORT}`;
 const MIN_PASSWORD_LENGTH = 6;
@@ -86,11 +88,17 @@ function createMainWindow({ setupMode = false } = {}) {
 
   return new Promise((resolve) => {
     mainWindow = new BrowserWindow({
-      width: 540,
+      width: 520,
       height: setupMode ? 720 : 680,
-      resizable: false,
-      maximizable: false,
+      minWidth: 420,
+      minHeight: 520,
+      frame: false,
+      resizable: true,
+      maximizable: true,
+      minimizable: true,
       title: setupMode ? `Set password — ${APP_NAME}` : APP_NAME,
+      ...(existsSync(APP_ICON) ? { icon: APP_ICON } : {}),
+      backgroundColor: "#f4f6fb",
       webPreferences: {
         preload: path.join(__dirname, "preload.cjs"),
         contextIsolation: true,
@@ -143,8 +151,6 @@ function openOpentraderInApp() {
     () => showingTrader
   );
 
-  mainWindow.setResizable(true);
-  mainWindow.setMaximizable(true);
   mainWindow.setMinimumSize(960, 640);
   if (!mainWindow.isMaximized()) {
     mainWindow.setSize(1280, 840);
@@ -184,7 +190,6 @@ async function bootstrap() {
   const needsExchange = uiUrl.includes("/dashboard/accounts");
   sendToSplash({
     type: "ready",
-    adminPassword: data.adminPassword,
     uiUrl,
     message: needsExchange
       ? "Ready — connect an exchange account to begin (opening dashboard in 3s)."
@@ -255,6 +260,23 @@ ipcMain.handle("open-opentrader", () => {
   mainWindow?.focus();
   return { ok: true };
 });
+
+ipcMain.handle("window-minimize", () => {
+  mainWindow?.minimize();
+});
+
+ipcMain.handle("window-maximize", () => {
+  if (!mainWindow) return false;
+  if (mainWindow.isMaximized()) mainWindow.unmaximize();
+  else mainWindow.maximize();
+  return mainWindow.isMaximized();
+});
+
+ipcMain.handle("window-close", () => {
+  mainWindow?.close();
+});
+
+ipcMain.handle("window-is-maximized", () => mainWindow?.isMaximized() ?? false);
 
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
 if (!gotSingleInstanceLock) {

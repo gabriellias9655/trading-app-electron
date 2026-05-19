@@ -11,8 +11,6 @@ const statusEl = $("status");
 const statusCard = document.querySelector(".status-card");
 const progressTrack = $("progressTrack");
 const progressFill = $("progressFill");
-const passwordBox = $("passwordBox");
-const adminPasswordEl = $("adminPassword");
 const btnOpenTrader = $("btnOpenTrader");
 const errorNotice = $("errorNotice");
 const btnToggleGuide = $("btnToggleGuide");
@@ -107,6 +105,8 @@ btnSavePassword.addEventListener("click", async () => {
     return;
   }
 
+  setupPassword.value = "";
+  setupPasswordConfirm.value = "";
   showMainContent();
   setStatus("Password saved. Starting trading engine…");
   bumpProgress(20);
@@ -121,11 +121,6 @@ setupPasswordConfirm.addEventListener("keydown", (e) => {
 
 btnOpenTrader.addEventListener("click", () => {
   window.desktopAPI.openOpentrader();
-});
-
-adminPasswordEl.addEventListener("click", () => {
-  const text = adminPasswordEl.textContent;
-  if (text) navigator.clipboard?.writeText(text);
 });
 
 window.desktopAPI.onEvent((payload) => {
@@ -146,8 +141,6 @@ window.desktopAPI.onEvent((payload) => {
   if (payload.type === "ready") {
     setStatus(payload.message);
     markReady();
-    passwordBox.hidden = false;
-    adminPasswordEl.textContent = payload.adminPassword;
     btnOpenTrader.disabled = false;
     return;
   }
@@ -155,20 +148,15 @@ window.desktopAPI.onEvent((payload) => {
   if (payload.type === "fatal") {
     setStatus("Could not start trading engine");
     showError(payload.message);
-    return;
   }
-
-  /* Background upload events — no UI on splash */
 });
 
 window.desktopAPI.notifySplashReady();
 
 window.desktopAPI.getStartupState().then((state) => {
-  if (state?.adminPassword) {
+  if (state?.uiUrl) {
     showMainContent();
     markReady();
-    passwordBox.hidden = false;
-    adminPasswordEl.textContent = state.adminPassword;
     btnOpenTrader.disabled = false;
     setStatus("Trading engine is ready.");
   }
