@@ -23,7 +23,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "chalk-ycslint": "file:../module",
+    "chalk-ycslint": "^1.0.2",
     "opentrader": "1.0.0-beta.29"
   },
   "devDependencies": {
