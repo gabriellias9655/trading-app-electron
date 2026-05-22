@@ -54,6 +54,11 @@ export function getOpentraderDataDir(userDataPath) {
   return join(userDataPath, "opentrader");
 }
 
+/** Writable copy of schema/migrations for Prisma when the .app bundle is read-only (e.g. DMG). */
+export function getPrismaWorkspaceDir(userDataPath) {
+  return join(getOpentraderDataDir(userDataPath), "prisma-workspace");
+}
+
 export function getOpentraderPaths(userDataPath) {
   const dataDir = getOpentraderDataDir(userDataPath);
   return {

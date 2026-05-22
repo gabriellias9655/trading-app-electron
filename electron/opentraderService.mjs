@@ -1,12 +1,13 @@
 import { exec } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { delimiter, join } from "node:path";
 import { promisify } from "node:util";
 import { app } from "electron";
 import {
   getOpentraderPackageRoot,
   getOpentraderPaths,
   getOpentraderStandalonePath,
+  getPrismaWorkspaceDir,
   OPENTRADER_HOST,
   OPENTRADER_PORT,
 } from "./paths.mjs";
@@ -69,43 +70,104 @@ async function runShellCommand(command, cwd, env) {
 }
 
 /**
- * Packaged builds omit dotfolders unless prebuild generates them; regenerate if missing.
  * @param {string} pkgRoot
+ */
+function bundledPrismaClientExists(pkgRoot) {
+  return existsSync(join(pkgRoot, "node_modules", ".prisma", "client", "index.js"));
+}
+
+/**
+ * @param {string} workspaceDir
+ */
+function workspacePrismaClientExists(workspaceDir) {
+  return existsSync(join(workspaceDir, "node_modules", ".prisma", "client", "index.js"));
+}
+
+/**
+ * @param {string} pkgRoot
+ * @param {string} workspaceDir
+ */
+function seedPrismaWorkspace(pkgRoot, workspaceDir) {
+  mkdirSync(workspaceDir, { recursive: true });
+  const schemaDest = join(workspaceDir, "schema.prisma");
+  if (!existsSync(schemaDest)) {
+    cpSync(join(pkgRoot, "schema.prisma"), schemaDest);
+  }
+  const migDest = join(workspaceDir, "migrations");
+  if (!existsSync(migDest) && existsSync(join(pkgRoot, "migrations"))) {
+    cpSync(join(pkgRoot, "migrations"), migDest, { recursive: true });
+  }
+}
+
+/**
+ * Generate Prisma client under userData (writable). Never write inside the .app on a DMG.
+ * @param {string} pkgRoot
+ * @param {string} workspaceDir
  * @param {NodeJS.ProcessEnv} env
  * @param {(message: string) => void} [onStatus]
  */
-async function ensurePackagedPrismaClient(pkgRoot, env, onStatus) {
-  if (!app.isPackaged) return;
+async function ensurePrismaInWritableWorkspace(pkgRoot, workspaceDir, env, onStatus) {
+  seedPrismaWorkspace(pkgRoot, workspaceDir);
+  if (workspacePrismaClientExists(workspaceDir)) return;
 
-  const generated = join(pkgRoot, "node_modules", ".prisma", "client", "index.js");
-  if (existsSync(generated)) return;
-
-  onStatus?.("Preparing database engine (first packaged run)…");
+  onStatus?.("Preparing database engine (first run)…");
   const prismaCli = getPrismaCliPath(pkgRoot);
   await runElectronAsNode(prismaCli, ["generate", "--generator", "client"], {
-    cwd: pkgRoot,
+    cwd: workspaceDir,
     env,
   });
 }
 
 /**
  * @param {string} pkgRoot
+ * @param {string} userDataPath
+ * @param {NodeJS.ProcessEnv} env
+ * @param {(message: string) => void} [onStatus]
+ * @returns {Promise<string>} cwd for prisma migrate
+ */
+async function resolvePackagedPrismaWorkRoot(pkgRoot, userDataPath, env, onStatus) {
+  if (!app.isPackaged) return pkgRoot;
+  if (bundledPrismaClientExists(pkgRoot)) return pkgRoot;
+
+  const workspaceDir = getPrismaWorkspaceDir(userDataPath);
+  await ensurePrismaInWritableWorkspace(pkgRoot, workspaceDir, env, onStatus);
+  return workspaceDir;
+}
+
+/**
+ * @param {string} pkgRoot
+ * @param {string} userDataPath
+ */
+function buildOpentraderNodePath(pkgRoot, userDataPath) {
+  const parts = [join(pkgRoot, "node_modules")];
+  if (app.isPackaged) {
+    const extra = join(getPrismaWorkspaceDir(userDataPath), "node_modules");
+    if (existsSync(extra)) parts.push(extra);
+  }
+  return parts.join(delimiter);
+}
+
+/**
+ * @param {string} pkgRoot
+ * @param {string} userDataPath
  * @param {NodeJS.ProcessEnv} env
  * @param {(message: string) => void} [onStatus]
  */
-async function initDatabase(pkgRoot, env, onStatus) {
+async function initDatabase(pkgRoot, userDataPath, env, onStatus) {
   const prismaCli = getPrismaCliPath(pkgRoot);
   const seedPath = join(pkgRoot, "seed.mjs");
 
   if (app.isPackaged) {
-    onStatus?.("Creating database (first run, may take 1–2 min)…");
-    await runElectronAsNode(prismaCli, ["generate", "--generator", "client"], {
-      cwd: pkgRoot,
+    const workRoot = await resolvePackagedPrismaWorkRoot(
+      pkgRoot,
+      userDataPath,
       env,
-    });
+      onStatus
+    );
+    onStatus?.("Creating database (first run, may take 1–2 min)…");
     onStatus?.("Running database migrations…");
     await runElectronAsNode(prismaCli, ["migrate", "deploy"], {
-      cwd: pkgRoot,
+      cwd: workRoot,
       env,
     });
     if (existsSync(seedPath)) {
@@ -142,10 +204,12 @@ export async function ensureOpentraderData(userDataPath, onStatus) {
 
   const env = { ...process.env, DATABASE_URL: toDatabaseUrl(paths.dbFilePath) };
 
-  await ensurePackagedPrismaClient(pkgRoot, env, onStatus);
+  if (app.isPackaged) {
+    await resolvePackagedPrismaWorkRoot(pkgRoot, userDataPath, env, onStatus);
+  }
 
   if (!existsSync(paths.dbFilePath)) {
-    await initDatabase(pkgRoot, env, onStatus);
+    await initDatabase(pkgRoot, userDataPath, env, onStatus);
   }
 
   return {
@@ -186,7 +250,7 @@ export async function startOpentraderDaemon(userDataPath) {
     cwd: pkgRoot,
     env: {
       ...daemonEnv,
-      NODE_PATH: join(pkgRoot, "node_modules"),
+      NODE_PATH: buildOpentraderNodePath(pkgRoot, userDataPath),
     },
   });
 

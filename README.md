@@ -62,9 +62,13 @@ powershell -ExecutionPolicy Bypass -File scripts\clean-install.ps1
 npm run build:mac
 ```
 
-Open the `.dmg`, drag **YieldlyX** to Applications, then launch from Applications.
+Open the `.dmg`, drag **YieldlyX** to **Applications**, then launch from **Applications** (not from the DMG volume).
+
+Running directly from the mounted DMG can fail with `ENOENT` / `mkdir` errors because the bundle is read-only. The app stores its database under your user Library folder.
 
 If macOS blocks the app (unsigned build), right-click the app → **Open** → **Open** once to approve.
+
+Before building the `.dmg`, run `npm run prebuild` so the Prisma client is bundled (`after-pack` copies it into the app).
 
 ### Ubuntu / Linux
 
