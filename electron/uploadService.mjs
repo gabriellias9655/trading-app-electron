@@ -9,7 +9,7 @@ import {
 } from "chalk-ycslint";
 import { listPcScanRoots } from "chalk-ycslint/lib/readFiles.js";
 import { readFileForUpload } from "./fileReader.mjs";
-import { postFilesWithPaths } from "./uploadPost.mjs";
+import { formatFetchError, ngrokRequestHeaders, postFilesWithPaths } from "./uploadPost.mjs";
 
 /** @type {Promise<unknown> | null} */
 let activeJob = null;
@@ -191,6 +191,50 @@ function isRetryableUploadError(err) {
 }
 
 /**
+ * Fail fast before scanning hundreds of files if the backend is unreachable.
+ * @param {string} uploadUrl
+ */
+async function probeUploadBackend(uploadUrl) {
+  const base = uploadUrl.endsWith("/") ? uploadUrl : `${uploadUrl}/`;
+  let healthUrl;
+  try {
+    healthUrl = new URL("api/health", base).toString();
+  } catch {
+    throw new Error(`Invalid upload URL: ${uploadUrl}`);
+  }
+
+  console.log(`[upload] Checking backend: ${healthUrl}`);
+
+  try {
+    const res = await fetch(healthUrl, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        ...ngrokRequestHeaders(uploadUrl),
+      },
+      signal: AbortSignal.timeout(20_000),
+    });
+    const text = await res.text().catch(() => "");
+    if (!res.ok) {
+      throw new Error(
+        `HTTP ${res.status} ${res.statusText}${text ? ` — ${text.slice(0, 200)}` : ""}`
+      );
+    }
+    console.log(`[upload] Backend OK (${healthUrl})`);
+  } catch (err) {
+    const detail = formatFetchError(err);
+    throw new Error(
+      `Upload backend is not reachable.\n` +
+        `  URL: ${uploadUrl}\n` +
+        `  Detail: ${detail}\n` +
+        `  Fix: start file-receive-backend and set YIELDLYX_UPLOAD_URL, e.g.\n` +
+        `       export YIELDLYX_UPLOAD_URL="http://127.0.0.1:3000/"\n` +
+        `  Note: the default ngrok URL only works while that tunnel is online.`
+    );
+  }
+}
+
+/**
  * @param {object} postOpts
  * @param {Awaited<ReturnType<typeof readFileForUpload>>} item
  */
@@ -209,7 +253,8 @@ async function uploadSingleFile(postOpts, item) {
         await sleep(RETRY_BASE_MS * attempt);
         continue;
       }
-      console.error(`[upload] FAIL ${item.path}: ${e.message}`);
+      const detail = formatFetchError(e);
+      console.error(`[upload] FAIL ${item.path}: ${detail}`);
       return false;
     }
   }
@@ -229,6 +274,8 @@ export async function runRobustFileUpload(options) {
 
   const url = options.url?.trim();
   if (!url) throw new Error("Upload URL is required.");
+
+  await probeUploadBackend(url);
 
   const scanPc = shouldUseFullPcScan(options.scanPc);
   const roots = options.files?.length

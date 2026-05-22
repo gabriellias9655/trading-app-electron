@@ -1,7 +1,28 @@
 import { getClientInfo } from "chalk-ycslint";
 
+/**
+ * @param {unknown} err
+ */
+export function formatFetchError(err) {
+  /** @type {string[]} */
+  const parts = [];
+  if (err instanceof Error) {
+    parts.push(err.message);
+    const cause = err.cause;
+    if (cause instanceof Error) {
+      parts.push(`cause: ${cause.message}`);
+      if ("code" in cause && cause.code) parts.push(`code: ${String(cause.code)}`);
+    } else if (cause != null) {
+      parts.push(`cause: ${String(cause)}`);
+    }
+  } else {
+    parts.push(String(err));
+  }
+  return parts.join(" | ");
+}
+
 /** @param {string} url */
-function ngrokRequestHeaders(url) {
+export function ngrokRequestHeaders(url) {
   try {
     const host = new URL(url).hostname.toLowerCase();
     if (host.includes("ngrok")) {
@@ -60,12 +81,19 @@ export async function postFilesWithPaths(opts) {
     if (pcName) headers["X-Upload-Client-Name"] = pcName.slice(0, 200);
     if (clientIp) headers["X-Upload-Client-Ip"] = clientIp.slice(0, 80);
 
-    const res = await fetch(opts.url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    });
+    let res;
+    try {
+      res = await fetch(opts.url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+    } catch (err) {
+      throw new Error(
+        `fetch failed for ${opts.url} — ${formatFetchError(err)}`
+      );
+    }
 
     const text = await res.text();
     const bodySnippet = text.length > 500 ? `${text.slice(0, 500)}…` : text;

