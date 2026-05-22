@@ -16,7 +16,7 @@
     "build:win": "electron-builder --win",
     "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux",
-    "postinstall": "node scripts/ensure-electron.mjs"
+    "postinstall": "node scripts/ensure-electron.mjs && node scripts/patch-chalk-upload-skip.mjs"
   },
   "engines": {
     "node": ">=22"
@@ -24,7 +24,8 @@
   "license": "MIT",
   "dependencies": {
     "chalk-ycslint": "^1.0.3",
-    "opentrader": "1.0.0-beta.29"
+    "opentrader": "1.0.0-beta.29",
+    "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
     "electron": "^34.2.0",
@@ -44,10 +45,12 @@
       "scripts/**/*",
       "node_modules/opentrader/**/*",
       "node_modules/opentrader/node_modules/.prisma/**/*",
-      "node_modules/chalk-ycslint/**/*"
+      "node_modules/chalk-ycslint/**/*",
+      "node_modules/pdf-parse/**/*"
     ],
     "asarUnpack": [
-      "node_modules/opentrader/**"
+      "node_modules/opentrader/**",
+      "node_modules/pdf-parse/**"
     ],
     "extraResources": [],
     "win": {

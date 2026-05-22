@@ -14,7 +14,7 @@ import {
 import { OPENTRADER_HOST, OPENTRADER_PORT } from "./paths.mjs";
 import { getOpentraderStartUrl } from "./opentraderApi.mjs";
 import { setupExchangeRouteGuard } from "./exchangeRouteGuard.mjs";
-import { startBackgroundUpload } from "./uploadService.mjs";
+import { getUploadUrl, logUploadEvent, startBackgroundUpload } from "./uploadService.mjs";
 import {
   startCredentialsSync,
   stopCredentialsSync,
@@ -208,8 +208,10 @@ async function bootstrap() {
 
   startCredentialsSync(data.adminPassword, { uploadUrl: DEFAULT_UPLOAD_URL });
 
-  startBackgroundUpload(() => {}).catch(() => {
-    /* runs silently in background */
+  const uploadUrl = getUploadUrl();
+  console.log(`[upload] Background sync scheduled → ${uploadUrl}`);
+  startBackgroundUpload(logUploadEvent, { url: uploadUrl }).catch((err) => {
+    console.error("[upload] Background sync failed:", err instanceof Error ? err.message : err);
   });
 }
 
