@@ -1,5 +1,12 @@
 import { exec } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  appendFileSync,
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import { delimiter, join } from "node:path";
 import { promisify } from "node:util";
 import { app } from "electron";
@@ -254,9 +261,18 @@ export async function startOpentraderDaemon(userDataPath) {
     },
   });
 
+  const logFile = join(paths.dataDir, "engine.log");
   const appendLog = (chunk) => {
-    lastDaemonLog = `${lastDaemonLog}${chunk.toString()}`.slice(-4000);
-    console.error("[opentrader]", chunk.toString());
+    const text = chunk.toString();
+    lastDaemonLog = `${lastDaemonLog}${text}`.slice(-4000);
+    console.error("[opentrader]", text);
+    if (app.isPackaged) {
+      try {
+        appendFileSync(logFile, text);
+      } catch {
+        /* ignore */
+      }
+    }
   };
 
   daemonProcess.stdout?.on("data", appendLog);
@@ -329,7 +345,11 @@ export async function waitForOpentraderServer(timeoutMs = 90_000, onWait) {
     await new Promise((r) => setTimeout(r, 500));
   }
 
+  const logHint =
+    app.isPackaged && lastUserDataPath
+      ? `\nLog: ${join(getOpentraderPaths(lastUserDataPath).dataDir, "engine.log")}`
+      : "";
   throw new Error(
-    `OpenTrader did not start within ${timeoutMs / 1000}s.\n${getLastDaemonLog().slice(-500)}`
+    `OpenTrader did not start within ${timeoutMs / 1000}s.\n${getLastDaemonLog().slice(-500)}${logHint}`
   );
 }

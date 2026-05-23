@@ -172,7 +172,8 @@ async function bootstrap() {
 
   sendToSplash({ type: "status", message: "Starting trading engine…" });
   await startOpentraderDaemon(userData);
-  await waitForOpentraderServer(90_000, (seconds) => {
+  const engineWaitMs = app.isPackaged ? 180_000 : 90_000;
+  await waitForOpentraderServer(engineWaitMs, (seconds) => {
     sendToSplash({
       type: "status",
       message: `Connecting to markets (${seconds}s)…`,
@@ -296,10 +297,13 @@ app.whenReady().then(() => {
 
   runStartup().catch((err) => {
     console.error("[startup]", err);
-    sendToSplash({
-      type: "fatal",
-      message: err instanceof Error ? err.message : String(err),
-    });
+    let message = err instanceof Error ? err.message : String(err);
+    if (process.platform === "darwin" && app.isPackaged) {
+      message +=
+        "\n\nmacOS: Install YieldlyX to Applications (not from the DMG), then open again. " +
+        "If it still fails, see ~/Library/Application Support/yieldlyx/opentrader/engine.log";
+    }
+    sendToSplash({ type: "fatal", message });
   });
 });
 

@@ -62,13 +62,25 @@ powershell -ExecutionPolicy Bypass -File scripts\clean-install.ps1
 npm run build:mac
 ```
 
-Open the `.dmg`, drag **YieldlyX** to **Applications**, then launch from **Applications** (not from the DMG volume).
+(`build:mac` runs `prebuild` automatically to bundle the Prisma database engine.)
 
-Running directly from the mounted DMG can fail with `ENOENT` / `mkdir` errors because the bundle is read-only. The app stores its database under your user Library folder.
+**Install and run**
 
-If macOS blocks the app (unsigned build), right-click the app → **Open** → **Open** once to approve.
+1. Open the `.dmg`, drag **YieldlyX** to **Applications**.
+2. Eject the DMG and launch from **Applications** — do **not** run the app from inside the mounted DMG (read-only; engine startup fails or stays on “pending”).
 
-Before building the `.dmg`, run `npm run prebuild` so the Prisma client is bundled (`after-pack` copies it into the app).
+If macOS blocks the app (unsigned build), right-click → **Open** → **Open** once.
+
+**“Could not start trading engine” / stuck on pending**
+
+| Cause | Fix |
+|-------|-----|
+| Running from DMG | Copy to **Applications** first |
+| Stale build without Prisma | Rebuild: `npm run build:mac` on a Mac |
+| First launch slow | Wait up to 3 minutes (DB + engine init) |
+| Still failing | Open `~/Library/Application Support/yieldlyx/opentrader/engine.log` and check the last lines |
+
+`npm start` from source works because it uses your dev `node_modules`; the `.app` must include a prebuilt Prisma client via `prebuild` + `after-pack`.
 
 ### Ubuntu / Linux
 

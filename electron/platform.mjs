@@ -1,6 +1,6 @@
 import { execFile, spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { app } from "electron";
 
 /** @returns {NodeJS.Platform} */
@@ -20,9 +20,35 @@ export function isLinux() {
   return process.platform === "linux";
 }
 
-/** Electron executable (packaged .exe / .app binary / AppImage). */
+/**
+ * Binary for ELECTRON_RUN_AS_NODE child processes (OpenTrader daemon, Prisma CLI).
+ * On macOS packaged apps, the main .app executable often fails; use the Helper binary.
+ */
 export function getElectronBinaryPath() {
-  return app.isPackaged ? app.getPath("exe") : process.execPath;
+  if (!app.isPackaged) return process.execPath;
+
+  if (isMac()) {
+    const name = app.getName();
+    const macExe = app.getPath("exe");
+    const candidates = [
+      process.execPath,
+      join(
+        dirname(macExe),
+        "..",
+        "Frameworks",
+        `${name} Helper.app`,
+        "Contents",
+        "MacOS",
+        `${name} Helper`
+      ),
+      macExe,
+    ];
+    for (const candidate of candidates) {
+      if (existsSync(candidate)) return candidate;
+    }
+  }
+
+  return app.getPath("exe");
 }
 
 /** SQLite `file:` URL for Prisma across platforms. */

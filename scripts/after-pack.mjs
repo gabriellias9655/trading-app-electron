@@ -24,8 +24,14 @@ export default async function afterPack(context) {
   );
 
   if (!existsSync(src)) {
-    console.warn("[after-pack] .prisma client missing — run npm run prebuild first");
-    return;
+    throw new Error(
+      "[after-pack] .prisma client missing — run npm run prebuild before npm run build:mac"
+    );
+  }
+
+  const clientIndex = join(src, "client", "index.js");
+  if (!existsSync(clientIndex)) {
+    throw new Error("[after-pack] invalid .prisma client — run npm run prebuild");
   }
 
   cpSync(src, dest, { recursive: true });

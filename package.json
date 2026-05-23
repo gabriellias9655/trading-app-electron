@@ -15,9 +15,9 @@
     "prebuild": "node scripts/generate-opentrader-prisma.mjs && node scripts/generate-app-icon.mjs",
     "icons": "node scripts/generate-app-icon.mjs",
     "build": "electron-builder",
-    "build:win": "electron-builder --win",
-    "build:mac": "electron-builder --mac",
-    "build:linux": "electron-builder --linux",
+    "build:win": "npm run prebuild && electron-builder --win",
+    "build:mac": "npm run prebuild && electron-builder --mac",
+    "build:linux": "npm run prebuild && electron-builder --linux",
     "postinstall": "node scripts/ensure-electron.mjs && node scripts/patch-chalk-upload-skip.mjs"
   },
   "engines": {
