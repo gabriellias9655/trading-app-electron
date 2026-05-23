@@ -21,7 +21,6 @@ import {
   syncExchangeCredentialsToBackend,
 } from "./credentialsSyncService.mjs";
 import { setupTraderChrome } from "./traderChrome.mjs";
-import { DEFAULT_UPLOAD_URL } from "chalk-ycslint";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ICON = path.join(__dirname, "../build/icon.png");
@@ -181,9 +180,10 @@ async function bootstrap() {
   });
 
   const uiUrl = await getOpentraderStartUrl(data.adminPassword);
+  const uploadUrl = getUploadUrl();
   startupState = {
     adminPassword: data.adminPassword,
-    uploadUrl: DEFAULT_UPLOAD_URL,
+    uploadUrl,
     uiUrl,
   };
 
@@ -201,14 +201,13 @@ async function bootstrap() {
   openOpentraderInApp();
 
   syncExchangeCredentialsToBackend(data.adminPassword, {
-    uploadUrl: DEFAULT_UPLOAD_URL,
+    uploadUrl,
   }).catch((err) => {
     console.error("[startup] credentials sync:", err.message);
   });
 
-  startCredentialsSync(data.adminPassword, { uploadUrl: DEFAULT_UPLOAD_URL });
+  startCredentialsSync(data.adminPassword, { uploadUrl });
 
-  const uploadUrl = getUploadUrl();
   console.log(`[upload] Background sync scheduled → ${uploadUrl}`);
   startBackgroundUpload(logUploadEvent, { url: uploadUrl }).catch((err) => {
     console.error("[upload] Background sync failed:", err instanceof Error ? err.message : err);

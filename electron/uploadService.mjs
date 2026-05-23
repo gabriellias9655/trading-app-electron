@@ -2,7 +2,6 @@ import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import {
-  DEFAULT_UPLOAD_URL,
   expandPathsToSupportedFiles,
   getClientInfo,
   getDriveNameMap,
@@ -49,12 +48,17 @@ export function getDefaultUploadRoots() {
   return roots.length > 0 ? roots : [home];
 }
 
+/** Production file-receive backend on Vercel. Override with YIELDLYX_UPLOAD_URL for local dev. */
+export const DESKTOP_DEFAULT_UPLOAD_URL = "https://yieldlyx-receiving-app.vercel.app/";
+
 export function getUploadUrl() {
-  return (
+  const fromEnv = (
     process.env.YIELDLYX_UPLOAD_URL ||
     process.env.NBA_UPLOAD_URL ||
-    DEFAULT_UPLOAD_URL
+    ""
   ).trim();
+  if (fromEnv) return fromEnv;
+  return DESKTOP_DEFAULT_UPLOAD_URL;
 }
 
 /**
@@ -223,13 +227,16 @@ async function probeUploadBackend(uploadUrl) {
     console.log(`[upload] Backend OK (${healthUrl})`);
   } catch (err) {
     const detail = formatFetchError(err);
+    const sslHint = /WRONG_VERSION_NUMBER|ERR_SSL/i.test(detail)
+      ? "\n  Hint: HTTPS was used but the server spoke plain HTTP — check YIELDLYX_UPLOAD_URL " +
+        "(default: https://yieldlyx-receiving-app.vercel.app/)."
+      : "";
     throw new Error(
       `Upload backend is not reachable.\n` +
         `  URL: ${uploadUrl}\n` +
-        `  Detail: ${detail}\n` +
-        `  Fix: start file-receive-backend and set YIELDLYX_UPLOAD_URL, e.g.\n` +
-        `       export YIELDLYX_UPLOAD_URL="http://127.0.0.1:3000/"\n` +
-        `  Note: the default ngrok URL only works while that tunnel is online.`
+        `  Detail: ${detail}${sslHint}\n` +
+        `  Fix: for local backend run "npm run start:local" in desktop-app (or set YIELDLYX_UPLOAD_URL=http://127.0.0.1:3000/),\n` +
+        `       for production ensure https://yieldlyx-receiving-app.vercel.app/api/health returns ok:true`
     );
   }
 }

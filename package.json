@@ -9,6 +9,8 @@
     "setup": "node scripts/ensure-electron.mjs",
     "prestart": "node scripts/ensure-electron.mjs",
     "start": "electron .",
+    "start:local": "node scripts/start-local.mjs",
+    "prestart:local": "node scripts/ensure-electron.mjs",
     "kill:engine": "node scripts/kill-port-8000.mjs",
     "prebuild": "node scripts/generate-opentrader-prisma.mjs && node scripts/generate-app-icon.mjs",
     "icons": "node scripts/generate-app-icon.mjs",

