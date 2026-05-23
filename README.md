@@ -59,10 +59,11 @@ powershell -ExecutionPolicy Bypass -File scripts\clean-install.ps1
 ### macOS
 
 ```bash
+npm install
 npm run build:mac
 ```
 
-(`build:mac` runs `prebuild` automatically to bundle the Prisma database engine.)
+(`build:mac` runs `prebuild`, which needs the `prisma` devDependency — run `npm install` after pulling updates.)
 
 **Install and run**
 

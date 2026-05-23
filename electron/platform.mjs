@@ -1,7 +1,9 @@
 import { execFile, spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { app } from "electron";
+import { findPrismaCli } from "../scripts/find-prisma-cli.mjs";
 
 /** @returns {NodeJS.Platform} */
 export function getPlatform() {
@@ -141,14 +143,8 @@ export function runElectronAsNode(scriptPath, scriptArgs = [], options) {
  * @param {string} pkgRoot
  */
 export function getPrismaCliPath(pkgRoot) {
-  const candidates = [
-    join(pkgRoot, "node_modules", "prisma", "build", "index.js"),
-    join(pkgRoot, "node_modules", ".bin", "prisma"),
-  ];
-
-  for (const candidate of candidates) {
-    if (existsSync(candidate)) return candidate;
-  }
-
-  throw new Error(`Prisma CLI not found under ${pkgRoot}`);
+  const appRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
+  const found = findPrismaCli(appRoot, pkgRoot);
+  if (found) return found;
+  throw new Error(`Prisma CLI not found (searched ${appRoot} and ${pkgRoot})`);
 }
