@@ -1,8 +1,10 @@
 import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
+const electronDir = dirname(fileURLToPath(import.meta.url));
 
 function getElectronApp() {
   return require("electron").app;
@@ -37,6 +39,40 @@ export function getOpentraderPackageRoot() {
 
   const devRoot = dirname(dirname(require.resolve("opentrader")));
   return getElectronApp().isPackaged ? toUnpackedPath(devRoot) : devRoot;
+}
+
+/**
+ * Absolute path to generated Prisma client index.js (packaged + dev).
+ * @param {string} [pkgRoot]
+ */
+export function resolvePrismaClientIndex(pkgRoot = getOpentraderPackageRoot()) {
+  const app = getElectronApp();
+  const candidates = [
+    join(pkgRoot, "node_modules", "prisma-client-dist", "index.js"),
+    join(pkgRoot, "node_modules", ".prisma", "client", "index.js"),
+  ];
+
+  if (app.isPackaged) {
+    const resourcesDir = dirname(app.getAppPath());
+    candidates.unshift(
+      join(resourcesDir, "prisma-client-dist", "index.js"),
+      join(pkgRoot, "..", "..", "prisma-client-dist", "index.js"),
+      join(resourcesDir, "app.asar.unpacked", "node_modules", "opentrader", "node_modules", "prisma-client-dist", "index.js")
+    );
+  }
+
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) return candidate;
+  }
+
+  throw new Error(
+    `Prisma client not found near OpenTrader.\nChecked:\n${candidates.map((c) => `  ${c}`).join("\n")}`
+  );
+}
+
+/** Entry script for the trading engine child process. */
+export function getOpentraderEnginePath() {
+  return join(electronDir, "opentrader-engine.mjs");
 }
 
 /** @param {string} [pkgRoot] */

@@ -74,8 +74,9 @@ body {
   display: block;
   width: 28px;
   height: 28px;
-  object-fit: cover;
-  object-position: top center;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 6px;
   -webkit-app-region: no-drag;
   flex-shrink: 0;
 }
@@ -260,16 +261,16 @@ h1 {
   margin-inline: auto;
 }
 
-/* ── Logo (587×735 source — keep aspect ratio for sharp rendering) ── */
+/* ── Logo (square mark on black) ── */
 .logo-image {
   display: block;
-  width: min(220px, 72vw);
+  width: min(160px, 48vw);
   height: auto;
-  aspect-ratio: 587 / 735;
+  aspect-ratio: 1;
   margin: 0;
   object-fit: contain;
-  /* Slight downward bias — source art sits high in the frame */
-  object-position: center 38%;
+  object-position: center;
+  border-radius: 16px;
 }
 
 .visually-hidden {

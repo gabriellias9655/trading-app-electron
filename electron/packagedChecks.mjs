@@ -5,6 +5,7 @@ import {
   getOpentraderPackageRoot,
   getOpentraderPaths,
   getOpentraderStandalonePath,
+  resolvePrismaClientIndex,
 } from "./paths.mjs";
 
 /**
@@ -12,6 +13,7 @@ import {
  */
 export function prismaClientBundled(pkgRoot) {
   return (
+    existsSync(join(pkgRoot, "node_modules", "prisma-client-dist", "index.js")) ||
     existsSync(join(pkgRoot, "node_modules", ".prisma", "client", "index.js")) ||
     existsSync(join(pkgRoot, "node_modules", "@prisma", "client", "index.js"))
   );
@@ -33,10 +35,12 @@ export function assertPackagedBundleReady(userDataPath) {
     issues.push(err instanceof Error ? err.message : String(err));
   }
 
-  if (!prismaClientBundled(pkgRoot)) {
+  try {
+    resolvePrismaClientIndex(pkgRoot);
+  } catch (err) {
     issues.push(
-      "Prisma database engine is missing from the app bundle.\n" +
-        "Rebuild on this Mac: npm install && npm run build:mac"
+      err instanceof Error ? err.message : String(err),
+      "Rebuild on this Mac: npm install && npm run build:mac"
     );
   }
 

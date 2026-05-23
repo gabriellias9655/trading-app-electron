@@ -1,65 +1,66 @@
 /**
- * electron-builder afterPack: copy .prisma (dotfolder) into unpacked OpenTrader.
+ * electron-builder afterPack: copy Prisma client into the .app (Resources + OpenTrader).
  * @param {import("electron-builder").AfterPackContext} context
  */
 export default async function afterPack(context) {
-  const { cpSync, existsSync } = await import("node:fs");
+  const { cpSync, existsSync, readdirSync, rmSync } = await import("node:fs");
   const { join } = await import("node:path");
 
-  const src = join(
-    context.packager.projectDir,
-    "node_modules",
-    "opentrader",
-    "node_modules",
-    ".prisma"
+  const projectDir = context.packager.projectDir;
+  const resourcesDir =
+    context.electronPlatformName === "darwin"
+      ? join(context.appOutDir, "Contents", "Resources")
+      : join(context.appOutDir, "resources");
+
+  const srcCandidates = [
+    join(projectDir, "build", "prisma-client-dist"),
+    join(projectDir, "node_modules", "opentrader", "node_modules", "prisma-client-dist"),
+  ];
+
+  const src = srcCandidates.find((p) => existsSync(join(p, "index.js")));
+  if (!src) {
+    throw new Error(
+      "[after-pack] prisma-client-dist missing — run npm run prebuild before npm run build:mac"
+    );
+  }
+
+  const fileCount = readdirSync(src).length;
+  if (fileCount < 3) {
+    throw new Error(`[after-pack] prisma-client-dist looks empty (${fileCount} files in ${src})`);
+  }
+
+  const resourcesDest = join(resourcesDir, "prisma-client-dist");
+  if (existsSync(resourcesDest)) {
+    rmSync(resourcesDest, { recursive: true, force: true });
+  }
+  cpSync(src, resourcesDest, { recursive: true });
+  if (!existsSync(join(resourcesDest, "index.js"))) {
+    throw new Error("[after-pack] failed to copy prisma-client-dist to Resources");
+  }
+  console.log(
+    `[after-pack] Resources/prisma-client-dist (${readdirSync(resourcesDest).length} files)`
   );
-  const dest = join(
-    context.appOutDir,
-    "resources",
+
+  const unpackedOpentrader = join(
+    resourcesDir,
     "app.asar.unpacked",
     "node_modules",
     "opentrader",
-    "node_modules",
-    ".prisma"
+    "node_modules"
   );
 
-  if (!existsSync(src)) {
-    throw new Error(
-      "[after-pack] .prisma client missing — run npm run prebuild before npm run build:mac"
-    );
+  const opentraderDest = join(unpackedOpentrader, "prisma-client-dist");
+  if (existsSync(opentraderDest)) {
+    rmSync(opentraderDest, { recursive: true, force: true });
   }
+  cpSync(src, opentraderDest, { recursive: true });
+  console.log("[after-pack] unpacked opentrader/node_modules/prisma-client-dist");
 
-  const clientIndex = join(src, "client", "index.js");
-  if (!existsSync(clientIndex)) {
-    throw new Error("[after-pack] invalid .prisma client — run npm run prebuild");
+  const dotPrismaSrc = join(projectDir, "node_modules", "opentrader", "node_modules", ".prisma");
+  if (existsSync(dotPrismaSrc)) {
+    const dotDest = join(unpackedOpentrader, ".prisma");
+    if (existsSync(dotDest)) rmSync(dotDest, { recursive: true, force: true });
+    cpSync(dotPrismaSrc, dotDest, { recursive: true });
+    console.log("[after-pack] copied .prisma into unpacked OpenTrader");
   }
-
-  cpSync(src, dest, { recursive: true });
-
-  const prismaClientSrc = join(
-    context.packager.projectDir,
-    "node_modules",
-    "opentrader",
-    "node_modules",
-    "@prisma",
-    "client"
-  );
-  if (existsSync(prismaClientSrc)) {
-    cpSync(
-      prismaClientSrc,
-      join(
-        context.appOutDir,
-        "resources",
-        "app.asar.unpacked",
-        "node_modules",
-        "opentrader",
-        "node_modules",
-        "@prisma",
-        "client"
-      ),
-      { recursive: true }
-    );
-  }
-
-  console.log("[after-pack] copied Prisma client into packaged app");
 }

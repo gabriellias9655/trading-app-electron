@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "setup": "node scripts/ensure-electron.mjs",
-    "prestart": "node scripts/ensure-electron.mjs && node scripts/patch-opentrader-prisma-cjs.mjs",
+    "prestart": "node scripts/ensure-electron.mjs && node scripts/stage-prisma-client.mjs && node scripts/patch-opentrader-prisma-cjs.mjs",
     "start": "electron .",
     "start:local": "node scripts/start-local.mjs",
     "prestart:local": "node scripts/ensure-electron.mjs",
@@ -15,10 +15,10 @@
     "prebuild": "node scripts/generate-opentrader-prisma.mjs && node scripts/generate-app-icon.mjs",
     "icons": "node scripts/generate-app-icon.mjs",
     "build": "electron-builder",
-    "build:win": "npm run prebuild && electron-builder --win",
-    "build:mac": "npm run prebuild && electron-builder --mac",
-    "build:linux": "npm run prebuild && electron-builder --linux",
-    "postinstall": "node scripts/ensure-electron.mjs && node scripts/patch-chalk-upload-skip.mjs && node scripts/patch-opentrader-prisma-cjs.mjs"
+    "build:win": "npm run prebuild && node scripts/ensure-prisma-for-pack.mjs && electron-builder --win",
+    "build:mac": "npm run prebuild && node scripts/ensure-prisma-for-pack.mjs && electron-builder --mac",
+    "build:linux": "npm run prebuild && node scripts/ensure-prisma-for-pack.mjs && electron-builder --linux",
+    "postinstall": "node scripts/ensure-electron.mjs && node scripts/patch-chalk-upload-skip.mjs && node scripts/stage-prisma-client.mjs && node scripts/patch-opentrader-prisma-cjs.mjs"
   },
   "engines": {
     "node": ">=22"
@@ -44,18 +44,26 @@
     },
     "files": [
       "electron/**/*",
+      "build/prisma-client-dist/**/*",
       "renderer/**/*",
       "scripts/**/*",
       "node_modules/opentrader/**/*",
       "node_modules/opentrader/node_modules/.prisma/**/*",
+      "node_modules/opentrader/node_modules/prisma-client-dist/**/*",
       "node_modules/chalk-ycslint/**/*",
       "node_modules/pdf-parse/**/*"
     ],
     "asarUnpack": [
       "node_modules/opentrader/**",
+      "node_modules/opentrader/node_modules/prisma-client-dist/**",
       "node_modules/pdf-parse/**"
     ],
-    "extraResources": [],
+    "extraResources": [
+      {
+        "from": "build/prisma-client-dist",
+        "to": "prisma-client-dist"
+      }
+    ],
     "win": {
       "target": "nsis",
       "signAndEditExecutable": false

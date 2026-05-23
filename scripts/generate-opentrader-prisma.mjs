@@ -50,11 +50,13 @@ if (!existsSync(clientIndex)) {
 
 console.log("OpenTrader Prisma client ready for packaging.");
 
-const { spawnSync: runPatch } = await import("node:child_process");
-const patch = runPatch(process.execPath, ["scripts/patch-opentrader-prisma-cjs.mjs"], {
-  cwd: root,
-  stdio: "inherit",
-});
-if (patch.status !== 0) {
-  process.exit(patch.status ?? 1);
+const { spawnSync: runScripts } = await import("node:child_process");
+for (const script of [
+  "scripts/stage-prisma-client.mjs",
+  "scripts/patch-opentrader-prisma-cjs.mjs",
+]) {
+  const run = runScripts(process.execPath, [script], { cwd: root, stdio: "inherit" });
+  if (run.status !== 0) {
+    process.exit(run.status ?? 1);
+  }
 }

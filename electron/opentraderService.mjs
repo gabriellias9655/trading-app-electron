@@ -10,9 +10,10 @@ import { delimiter, join } from "node:path";
 import { promisify } from "node:util";
 import { app } from "electron";
 import {
+  getOpentraderEnginePath,
   getOpentraderPackageRoot,
   getOpentraderPaths,
-  getOpentraderStandalonePath,
+  resolvePrismaClientIndex,
   OPENTRADER_HOST,
   OPENTRADER_PORT,
 } from "./paths.mjs";
@@ -181,7 +182,8 @@ export async function startOpentraderDaemon(userDataPath) {
   const pkgRoot = getOpentraderPackageRoot();
   const paths = getOpentraderPaths(userDataPath);
   const adminPassword = readFileSync(paths.passFilePath, "utf8").trim();
-  const standalonePath = getOpentraderStandalonePath(pkgRoot);
+  const enginePath = getOpentraderEnginePath();
+  const prismaClientIndex = resolvePrismaClientIndex(pkgRoot);
 
   const daemonEnv = {
     HOST: OPENTRADER_HOST,
@@ -189,11 +191,13 @@ export async function startOpentraderDaemon(userDataPath) {
     DATABASE_URL: toDatabaseUrl(paths.dbFilePath),
     ADMIN_PASSWORD: adminPassword,
     CUSTOM_STRATEGIES_PATH: paths.strategiesPath,
+    YIELDLYX_OPENTRADER_ROOT: pkgRoot,
+    YIELDLYX_PRISMA_CLIENT: prismaClientIndex,
   };
 
   lastDaemonLog = "";
 
-  daemonProcess = spawnElectronAsNode(standalonePath, [], {
+  daemonProcess = spawnElectronAsNode(enginePath, [], {
     cwd: pkgRoot,
     env: {
       ...daemonEnv,
