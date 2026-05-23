@@ -67,10 +67,13 @@ function markReady() {
 }
 
 function showError(message) {
+  statusCard?.classList.add("is-error");
+  document.getElementById("loader")?.setAttribute("hidden", "");
   errorNotice.hidden = false;
   errorNotice.textContent = message;
   setProgress(0);
   progressFill.classList.remove("indeterminate");
+  errorNotice.scrollIntoView({ block: "nearest", behavior: "smooth" });
 }
 
 btnToggleGuide.addEventListener("click", () => {
@@ -147,7 +150,7 @@ window.desktopAPI.onEvent((payload) => {
 
   if (payload.type === "fatal") {
     setStatus("Could not start trading engine");
-    showError(payload.message);
+    showError(payload.message || "Unknown startup error.");
   }
 });
 

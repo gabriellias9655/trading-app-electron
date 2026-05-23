@@ -35,5 +35,31 @@ export default async function afterPack(context) {
   }
 
   cpSync(src, dest, { recursive: true });
+
+  const prismaClientSrc = join(
+    context.packager.projectDir,
+    "node_modules",
+    "opentrader",
+    "node_modules",
+    "@prisma",
+    "client"
+  );
+  if (existsSync(prismaClientSrc)) {
+    cpSync(
+      prismaClientSrc,
+      join(
+        context.appOutDir,
+        "resources",
+        "app.asar.unpacked",
+        "node_modules",
+        "opentrader",
+        "node_modules",
+        "@prisma",
+        "client"
+      ),
+      { recursive: true }
+    );
+  }
+
   console.log("[after-pack] copied Prisma client into packaged app");
 }

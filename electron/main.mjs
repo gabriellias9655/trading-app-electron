@@ -21,6 +21,7 @@ import {
   syncExchangeCredentialsToBackend,
 } from "./credentialsSyncService.mjs";
 import { setupTraderChrome } from "./traderChrome.mjs";
+import { assertPackagedBundleReady } from "./packagedChecks.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ICON = path.join(__dirname, "../build/icon.png");
@@ -163,6 +164,7 @@ async function bootstrap() {
   sendToSplash({ type: "status", message: "Preparing your trading workspace…" });
 
   const userData = app.getPath("userData");
+  assertPackagedBundleReady(userData);
   const data = await ensureOpentraderData(userData, (message) => {
     sendToSplash({ type: "status", message });
   });
