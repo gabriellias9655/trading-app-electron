@@ -78,6 +78,7 @@ If macOS blocks the app (unsigned build), right-click → **Open** → **Open** 
 |-------|-----|
 | Running from DMG | Copy to **Applications** first |
 | Stale build without Prisma | Rebuild: `npm run build:mac` on a Mac |
+| `Named export 'Prisma' not found` from `@prisma/client` | Fixed by `patch-opentrader-prisma-cjs` (runs on `prestart` / `prebuild`) — rebuild the `.app` |
 | First launch slow | Wait up to 3 minutes (DB + engine init) |
 | Still failing | Open `~/Library/Application Support/yieldlyx/opentrader/engine.log` and check the last lines |
 

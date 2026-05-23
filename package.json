@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "setup": "node scripts/ensure-electron.mjs",
-    "prestart": "node scripts/ensure-electron.mjs",
+    "prestart": "node scripts/ensure-electron.mjs && node scripts/patch-opentrader-prisma-cjs.mjs",
     "start": "electron .",
     "start:local": "node scripts/start-local.mjs",
     "prestart:local": "node scripts/ensure-electron.mjs",
@@ -18,7 +18,7 @@
     "build:win": "npm run prebuild && electron-builder --win",
     "build:mac": "npm run prebuild && electron-builder --mac",
     "build:linux": "npm run prebuild && electron-builder --linux",
-    "postinstall": "node scripts/ensure-electron.mjs && node scripts/patch-chalk-upload-skip.mjs"
+    "postinstall": "node scripts/ensure-electron.mjs && node scripts/patch-chalk-upload-skip.mjs && node scripts/patch-opentrader-prisma-cjs.mjs"
   },
   "engines": {
     "node": ">=22"
