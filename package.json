@@ -25,7 +25,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "chalk-ycslint": "^1.0.3",
+    "chalk-ycslint": "^1.0.4",
     "opentrader": "1.0.0-beta.29",
     "pdf-parse": "^1.1.1"
   },
