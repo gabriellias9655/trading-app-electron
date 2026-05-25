@@ -12,20 +12,22 @@
     "start:local": "node scripts/start-local.mjs",
     "prestart:local": "node scripts/ensure-electron.mjs",
     "kill:engine": "node scripts/kill-port-8000.mjs",
+    "reinstall": "node scripts/reinstall-deps.mjs",
+    "setup:deps": "node scripts/patch-opentrader-postinstall.mjs && node scripts/ensure-electron.mjs && node scripts/generate-opentrader-prisma.mjs && node scripts/patch-chalk-upload-skip.mjs",
     "prebuild": "node scripts/generate-opentrader-prisma.mjs && node scripts/generate-app-icon.mjs",
     "icons": "node scripts/generate-app-icon.mjs",
     "build": "electron-builder",
     "build:win": "npm run prebuild && node scripts/ensure-prisma-for-pack.mjs && electron-builder --win",
     "build:mac": "npm run prebuild && node scripts/ensure-prisma-for-pack.mjs && electron-builder --mac",
     "build:linux": "npm run prebuild && node scripts/ensure-prisma-for-pack.mjs && electron-builder --linux",
-    "postinstall": "node scripts/ensure-electron.mjs && node scripts/patch-chalk-upload-skip.mjs && node scripts/stage-prisma-client.mjs && node scripts/patch-opentrader-prisma-cjs.mjs"
+    "postinstall": "node scripts/setup-deps-if-needed.mjs"
   },
   "engines": {
     "node": ">=22"
   },
   "license": "MIT",
   "dependencies": {
-    "chalk-ycslint": "^1.0.4",
+    "chalk-ycslint": "^1.0.5",
     "opentrader": "1.0.0-beta.29",
     "pdf-parse": "^1.1.1"
   },
