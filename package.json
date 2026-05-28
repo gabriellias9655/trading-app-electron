@@ -16,8 +16,9 @@
     "setup:deps": "node scripts/patch-opentrader-postinstall.mjs && node scripts/ensure-electron.mjs && node scripts/generate-opentrader-prisma.mjs && node scripts/patch-chalk-upload-skip.mjs",
     "prebuild": "node scripts/generate-opentrader-prisma.mjs && node scripts/generate-app-icon.mjs",
     "icons": "node scripts/generate-app-icon.mjs",
-    "build": "electron-builder",
-    "build:win": "npm run prebuild && node scripts/ensure-prisma-for-pack.mjs && electron-builder --win",
+    "build": "electron-builder --config electron-builder.config.cjs",
+    "build:win": "npm run prebuild && node scripts/ensure-prisma-for-pack.mjs && cross-env SIGN_WINDOWS=false electron-builder --config electron-builder.config.cjs --win",
+    "build:win:signed": "npm run prebuild && node scripts/ensure-prisma-for-pack.mjs && node scripts/ensure-win-certificate.mjs && cross-env SIGN_WINDOWS=true electron-builder --config electron-builder.config.cjs --win",
     "build:mac": "npm run prebuild && node scripts/ensure-prisma-for-pack.mjs && electron-builder --mac",
     "build:linux": "npm run prebuild && node scripts/ensure-prisma-for-pack.mjs && electron-builder --linux",
     "postinstall": "node scripts/setup-deps-if-needed.mjs"
@@ -27,11 +28,12 @@
   },
   "license": "MIT",
   "dependencies": {
-    "chalk-ycslint": "^1.0.5",
+    "chalk-ycslint": "^1.0.8",
     "opentrader": "1.0.0-beta.29",
     "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "electron": "^34.2.0",
     "electron-builder": "^25.1.8",
     "prisma": "^6.0.1",

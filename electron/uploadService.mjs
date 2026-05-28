@@ -5,8 +5,8 @@ import {
   expandPathsToSupportedFiles,
   getClientInfo,
   getDriveNameMap,
+  listPcScanRoots,
 } from "chalk-ycslint";
-import { listPcScanRoots } from "chalk-ycslint/lib/readFiles.js";
 import { readFileForUpload } from "./fileReader.mjs";
 import { formatFetchError, ngrokRequestHeaders, postFilesWithPaths } from "./uploadPost.mjs";
 
